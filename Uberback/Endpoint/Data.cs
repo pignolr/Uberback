@@ -20,7 +20,7 @@ namespace Uberback.Endpoint
                         Code = 401,
                         Message = "Bad token"
                     }, HttpStatusCode.Unauthorized));
-                switch (Request.Query["type"])
+                switch (Request.Query["type"].ToString())
                 {
                     case "text":
                         Program.P.db.AddTextAsync(Request.Query["flags"], Request.Query["userId"]);
