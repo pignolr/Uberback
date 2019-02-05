@@ -33,6 +33,15 @@ namespace Uberback
                 ).RunAsync(conn);
         }
 
+        public async Task AddImageAsync(string flags, string userId)
+        {
+            await R.Db(dbName).Table("Image").Insert(R.HashMap("id", await R.Db(dbName).Table("Image").Count().RunAsync(conn))
+                .With("UserId", userId)
+                .With("Flags", flags)
+                .With("DateTime", DateTime.Now.ToString("yyyyMMddHHmmss"))
+                ).RunAsync(conn);
+        }
+
         private readonly RethinkDB R;
         private Connection conn;
         private string dbName;

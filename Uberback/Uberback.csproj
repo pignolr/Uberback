@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Db.cs" />
     <Compile Include="Endpoint\Base.cs" />
+    <Compile Include="Endpoint\Image.cs" />
     <Compile Include="Endpoint\Text.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
