@@ -42,6 +42,16 @@ namespace Uberback
                 ).RunAsync(conn);
         }
 
+        public async Task<dynamic> GetTextAsync()
+        {
+            return (await R.Db(dbName).Table("Text").RunAsync(conn));
+        }
+
+        public async Task<dynamic> GetImageAsync()
+        {
+            return (await R.Db(dbName).Table("Image").RunAsync(conn));
+        }
+
         private readonly RethinkDB R;
         private Connection conn;
         private string dbName;
