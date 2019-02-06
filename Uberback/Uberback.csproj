@@ -68,6 +68,7 @@
     <Compile Include="Endpoint\Data.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Response\Collect.cs" />
     <Compile Include="Response\Error.cs" />
   </ItemGroup>
   <ItemGroup>

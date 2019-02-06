@@ -42,12 +42,12 @@ namespace Uberback
                 ).RunAsync(conn);
         }
 
-        public async Task<dynamic> GetTextAsync()
+        public async Task<Cursor<object>> GetTextAsync()
         {
             return (await R.Db(dbName).Table("Text").RunAsync(conn));
         }
 
-        public async Task<dynamic> GetImageAsync()
+        public async Task<Cursor<object>> GetImageAsync()
         {
             return (await R.Db(dbName).Table("Image").RunAsync(conn));
         }

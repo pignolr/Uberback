@@ -1,4 +1,9 @@
 ﻿using Nancy;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RethinkDb.Driver.Net;
+using System;
+using System.Collections.Generic;
 
 namespace Uberback.Endpoint
 {
@@ -23,14 +28,18 @@ namespace Uberback.Endpoint
                 switch (Request.Query["type"].ToString())
                 {
                     case "text":
-                        return (Response.AsJson(
-                            Program.P.db.GetTextAsync()
-                            ));
+                        return (Response.AsJson(new Response.Collect()
+                        {
+                            Code = 200,
+                            Data = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult())
+                        }));
 
                     case "image":
-                        return (Response.AsJson(
-                            Program.P.db.GetTextAsync()
-                            ));
+                        return (Response.AsJson(new Response.Collect()
+                        {
+                            Code = 200,
+                            Data = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult())
+                        }));
 
                     default:
                         return (Response.AsJson(new Response.Error()
@@ -40,6 +49,17 @@ namespace Uberback.Endpoint
                         }, HttpStatusCode.BadRequest));
                 }
             });
+        }
+
+        private List<JObject> GetContent(Cursor<object> items)
+        {
+            List<JObject> allElems = new List<JObject>();
+            foreach (dynamic elem in items)
+            {
+                Console.WriteLine(elem.ToString());
+                allElems.Add(elem);
+            }
+            return (allElems);
         }
     }
 }
