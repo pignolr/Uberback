@@ -51,13 +51,12 @@ namespace Uberback.Endpoint
             });
         }
 
-        private List<JObject> GetContent(Cursor<object> items)
+        private List<dynamic> GetContent(Cursor<object> items)
         {
-            List<JObject> allElems = new List<JObject>();
+            List<dynamic> allElems = new List<dynamic>();
             foreach (dynamic elem in items)
             {
-                Console.WriteLine(elem.ToString());
-                allElems.Add(elem);
+                allElems.Add(elem.ToString().Replace(Environment.NewLine, ""));
             }
             return (allElems);
         }

@@ -10,6 +10,6 @@ namespace Uberback.Response
         public int Code;
 
         [JsonProperty]
-        public List<JObject> Data;
+        public List<dynamic> Data;
     }
 }
