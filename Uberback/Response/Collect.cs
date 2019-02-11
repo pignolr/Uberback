@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace Uberback.Response
 {
@@ -10,6 +8,6 @@ namespace Uberback.Response
         public int Code;
 
         [JsonProperty]
-        public List<dynamic> Data;
+        public Data[] Data;
     }
 }

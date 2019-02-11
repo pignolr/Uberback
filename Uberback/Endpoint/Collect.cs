@@ -1,6 +1,4 @@
 ﻿using Nancy;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RethinkDb.Driver.Net;
 using System;
 using System.Collections.Generic;
@@ -51,14 +49,19 @@ namespace Uberback.Endpoint
             });
         }
 
-        private List<dynamic> GetContent(Cursor<object> items)
+        private Uberback.Response.Data[] GetContent(Cursor<object> items)
         {
-            List<dynamic> allElems = new List<dynamic>();
+            List<Uberback.Response.Data> datas = new List<Response.Data>();
             foreach (dynamic elem in items)
             {
-                allElems.Add(elem.ToString().Replace(Environment.NewLine, ""));
+                datas.Add(new Uberback.Response.Data()
+                {
+                    DateTime = elem.DateTime,
+                    Flags = elem.Flags,
+                    UserId = elem.UserId
+                });
             }
-            return (allElems);
+            return (datas.ToArray());
         }
     }
 }
