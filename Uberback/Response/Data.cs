@@ -2,6 +2,12 @@
 
 namespace Uberback.Response
 {
+    public enum DataType
+    {
+        Image,
+        Text
+    }
+
     public class Data
     {
         [JsonProperty]
@@ -12,5 +18,8 @@ namespace Uberback.Response
 
         [JsonProperty]
         public string UserId;
+
+        [JsonProperty]
+        public DataType Type;
     }
 }

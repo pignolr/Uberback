@@ -2,6 +2,7 @@
 using RethinkDb.Driver.Net;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Uberback.Endpoint
 {
@@ -11,7 +12,7 @@ namespace Uberback.Endpoint
         {
             Post("/", x =>
             {
-                if (string.IsNullOrEmpty(Request.Query["type"]) || string.IsNullOrEmpty(Request.Query["token"]))
+                if (string.IsNullOrEmpty(Request.Query["token"]))
                     return (Response.AsJson(new Response.Error()
                     {
                         Code = 400,
@@ -23,20 +24,30 @@ namespace Uberback.Endpoint
                         Code = 401,
                         Message = "Bad token"
                     }, HttpStatusCode.Unauthorized));
+                if (string.IsNullOrEmpty(Request.Query["type"]))
+                {
+                    List<Response.Data> datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
+                    datas.AddRange(GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList());
+                    return (Response.AsJson(new Response.Collect()
+                    {
+                        Code = 200,
+                        Data = datas.ToArray()
+                    }));
+                }
                 switch (Request.Query["type"].ToString())
                 {
                     case "text":
                         return (Response.AsJson(new Response.Collect()
                         {
                             Code = 200,
-                            Data = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult())
+                            Data = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text)
                         }));
 
                     case "image":
                         return (Response.AsJson(new Response.Collect()
                         {
                             Code = 200,
-                            Data = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult())
+                            Data = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image)
                         }));
 
                     default:
@@ -49,16 +60,17 @@ namespace Uberback.Endpoint
             });
         }
 
-        private Uberback.Response.Data[] GetContent(Cursor<object> items)
+        private Response.Data[] GetContent(Cursor<object> items, Response.DataType type)
         {
-            List<Uberback.Response.Data> datas = new List<Response.Data>();
+            List<Response.Data> datas = new List<Response.Data>();
             foreach (dynamic elem in items)
             {
-                datas.Add(new Uberback.Response.Data()
+                datas.Add(new Response.Data()
                 {
                     DateTime = elem.DateTime,
                     Flags = elem.Flags,
-                    UserId = elem.UserId
+                    UserId = elem.UserId,
+                    Type = type
                 });
             }
             return (datas.ToArray());
