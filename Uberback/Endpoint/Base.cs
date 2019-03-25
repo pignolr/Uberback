@@ -8,11 +8,7 @@ namespace Uberback.Endpoint
         {
             Get("/", x =>
             {
-                return (Response.AsJson(new Response.Error()
-                {
-                    Code = 200,
-                    Message = "Ok"
-                }));
+                return (Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent));
             });
         }
     }

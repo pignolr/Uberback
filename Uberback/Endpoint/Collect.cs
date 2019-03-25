@@ -15,13 +15,11 @@ namespace Uberback.Endpoint
                 if (string.IsNullOrEmpty(Request.Query["token"]))
                     return (Response.AsJson(new Response.Error()
                     {
-                        Code = 400,
                         Message = "Missing arguments"
                     }, HttpStatusCode.BadRequest));
                 if (Request.Query["token"] != Program.P.token)
                     return (Response.AsJson(new Response.Error()
                     {
-                        Code = 401,
                         Message = "Bad token"
                     }, HttpStatusCode.Unauthorized));
                 if (string.IsNullOrEmpty(Request.Query["type"]))
@@ -30,7 +28,6 @@ namespace Uberback.Endpoint
                     datas.AddRange(GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList());
                     return (Response.AsJson(new Response.Collect()
                     {
-                        Code = 200,
                         Data = datas.ToArray()
                     }));
                 }
@@ -39,21 +36,18 @@ namespace Uberback.Endpoint
                     case "text":
                         return (Response.AsJson(new Response.Collect()
                         {
-                            Code = 200,
                             Data = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text)
                         }));
 
                     case "image":
                         return (Response.AsJson(new Response.Collect()
                         {
-                            Code = 200,
                             Data = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image)
                         }));
 
                     default:
                         return (Response.AsJson(new Response.Error()
                         {
-                            Code = 400,
                             Message = "Type must be text or image"
                         }, HttpStatusCode.BadRequest));
                 }

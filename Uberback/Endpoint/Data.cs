@@ -11,13 +11,11 @@ namespace Uberback.Endpoint
                 if (string.IsNullOrEmpty(Request.Query["type"]) || string.IsNullOrEmpty(Request.Query["userId"]) || string.IsNullOrEmpty(Request.Query["flags"]) || string.IsNullOrEmpty(Request.Query["token"]))
                     return (Response.AsJson(new Response.Error()
                     {
-                        Code = 400,
                         Message = "Missing arguments"
                     }, HttpStatusCode.BadRequest));
                 if (Request.Query["token"] != Program.P.token)
                     return (Response.AsJson(new Response.Error()
                     {
-                        Code = 401,
                         Message = "Bad token"
                     }, HttpStatusCode.Unauthorized));
                 switch (Request.Query["type"].ToString())
@@ -33,15 +31,10 @@ namespace Uberback.Endpoint
                     default:
                         return (Response.AsJson(new Response.Error()
                         {
-                            Code = 400,
                             Message = "Type must be text or image"
                         }, HttpStatusCode.BadRequest));
                 }
-                return (Response.AsJson(new Response.Error()
-                {
-                    Code = 200,
-                    Message = "Ok"
-                }));
+                return (Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent));
             });
         }
     }
