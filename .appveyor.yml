@@ -1,0 +1,15 @@
+image: Visual Studio 2017
+
+before_build:
+- nuget restore
+- choco install opencover.portable
+- choco install codecov
+
+build:
+  project: Uberback.sln
+
+test_script:
+- sh install.sh
+- curl -LO http://www.commandline.co.uk/chp/chp-0.1.1.13.zip
+- unzip chp-0.1.1.13.zip
+- start chp/chp.exe rethinkdb-2.3.6/rethinkdb.exe
