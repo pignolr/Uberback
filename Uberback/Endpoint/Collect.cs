@@ -2,6 +2,7 @@
 using RethinkDb.Driver.Net;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Uberback.Endpoint
@@ -22,35 +23,49 @@ namespace Uberback.Endpoint
                     {
                         Message = "Bad token"
                     }, HttpStatusCode.Unauthorized));
+                if (!string.IsNullOrEmpty(Request.Query["type"]) && Request.Query["type"] != "image" && Request.Query["type"] != "text")
+                    return (Response.AsJson(new Response.Error()
+                    {
+                        Message = "If set, type must be text or image"
+                    }, HttpStatusCode.BadRequest));
+                List<Response.Data> datas;
                 if (string.IsNullOrEmpty(Request.Query["type"]))
                 {
-                    List<Response.Data> datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
+                    datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
                     datas.AddRange(GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList());
-                    return (Response.AsJson(new Response.Collect()
-                    {
-                        Data = datas.ToArray()
-                    }));
                 }
-                switch (Request.Query["type"].ToString())
+                else if (Request.Query["type"] == "text")
+                    datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList();
+                else
+                    datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
+                if (!string.IsNullOrEmpty(Request.Query["from"]))
                 {
-                    case "text":
-                        return (Response.AsJson(new Response.Collect()
-                        {
-                            Data = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text)
-                        }));
-
-                    case "image":
-                        return (Response.AsJson(new Response.Collect()
-                        {
-                            Data = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image)
-                        }));
-
-                    default:
+                    DateTime from;
+                    if (!DateTime.TryParseExact(Request.Query["from"], "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out from))
+                    {
                         return (Response.AsJson(new Response.Error()
                         {
-                            Message = "Type must be text or image"
+                            Message = "From must be in the format yyyyMMdd"
                         }, HttpStatusCode.BadRequest));
+                    }
+                    datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) < from);
                 }
+                if (!string.IsNullOrEmpty(Request.Query["to"]))
+                {
+                    DateTime to;
+                    if (!DateTime.TryParseExact(Request.Query["to"], "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out to))
+                    {
+                        return (Response.AsJson(new Response.Error()
+                        {
+                            Message = "From must be in the format yyyyMMdd"
+                        }, HttpStatusCode.BadRequest));
+                    }
+                    datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) > to);
+                }
+                return (Response.AsJson(new Response.Collect()
+                {
+                    Data = datas.ToArray()
+                }));
             });
         }
 
