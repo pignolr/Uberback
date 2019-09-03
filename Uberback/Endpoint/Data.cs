@@ -4,20 +4,27 @@ namespace Uberback.Endpoint
 {
     public class Data : NancyModule
     {
+        /// <summary>
+        /// Post informationx
+        /// </summary>
         public Data() : base("/data")
         {
             Post("/", x =>
             {
+                // Error Handling
+                Common.Answer? error = Common.BasicCheck(Request.Query["token"]);
+                if (error.HasValue)
+                    return (Response.AsJson(new Response.Error()
+                    {
+                        Message = error.Value.message
+                    }, error.Value.code));
                 if (string.IsNullOrEmpty(Request.Query["type"]) || string.IsNullOrEmpty(Request.Query["userId"]) || string.IsNullOrEmpty(Request.Query["flags"]) || string.IsNullOrEmpty(Request.Query["token"]))
                     return (Response.AsJson(new Response.Error()
                     {
                         Message = "Missing arguments"
                     }, HttpStatusCode.BadRequest));
-                if (Request.Query["token"] != Program.P.token)
-                    return (Response.AsJson(new Response.Error()
-                    {
-                        Message = "Bad token"
-                    }, HttpStatusCode.Unauthorized));
+
+                // Add information to the db
                 switch (Request.Query["type"].ToString())
                 {
                     case "text":
