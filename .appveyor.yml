@@ -13,3 +13,5 @@ test_script:
 - curl -LO http://www.commandline.co.uk/chp/chp-0.1.1.13.zip
 - unzip chp-0.1.1.13.zip
 - start chp/chp.exe rethinkdb-2.3.6/rethinkdb.exe
+- OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:".\Uberback.UnitTests\bin\Debug\Uberback.UnitTests.dll -noshadow" -filter:"+[Uberback*]* -[Uberback.UnitTests*]*" -output:".\coverage.xml"
+- codecov -f "coverage.xml"

@@ -11,6 +11,19 @@ namespace Uberback
         {
             this.dbName = dbName;
             R = RethinkDB.R;
+            conn = null;
+        }
+
+        /// <summary>
+        /// Delete the db
+        /// Used for unit tests
+        /// </summary>
+        /// <returns></returns>
+        public async Task DeleteAsync()
+        {
+            if (conn == null)
+                conn = await R.Connection().ConnectAsync();
+            R.DbDrop(dbName);
         }
 
         /// <summary>
