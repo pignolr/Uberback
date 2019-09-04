@@ -66,9 +66,11 @@ namespace Uberback.Endpoint
                     }
                     datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) > to);
                 }
+                int totalToxicity = datas.Where(y => y.Flags != "SAFE").Count();
                 return (Response.AsJson(new Response.Collect()
                 {
-                    Data = datas.ToArray()
+                    Data = datas.ToArray(),
+                    TotalToxicity = totalToxicity * 100 / datas.Count
                 }));
             });
         }

@@ -6,5 +6,8 @@ namespace Uberback.Response
     {
         [JsonProperty]
         public Data[] Data;
+
+        [JsonProperty]
+        public double TotalToxicity;
     }
 }
