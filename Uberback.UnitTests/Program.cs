@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Nancy;
+using Nancy.Testing;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Uberback.UnitTests
@@ -16,9 +18,15 @@ namespace Uberback.UnitTests
         }
 
         [Fact]
-        public void A()
+        public async Task MainEndpoint()
         {
-
+            await Init();
+            var bootstrapper = new DefaultNancyBootstrapper();
+            var browser = new Browser(bootstrapper);
+            var result = await browser.Get("/", with => {
+                with.HttpRequest();
+            });
+            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
         }
     }
 }
