@@ -11,28 +11,30 @@ namespace Uberback.Endpoint
         {
             Post("/", x =>
             {
+                var args = Common.ParseArgs(Request.Body);
+
                 // Error Handling
-                Common.Answer? error = Common.BasicCheck(Request.Query["token"]);
+                Common.Answer? error = Common.BasicCheck(args.Get("token"));
                 if (error.HasValue)
                     return (Response.AsJson(new Response.Error()
                     {
                         Message = error.Value.message
                     }, error.Value.code));
-                if (string.IsNullOrEmpty(Request.Query["type"]) || string.IsNullOrEmpty(Request.Query["userId"]) || string.IsNullOrEmpty(Request.Query["flags"]) || string.IsNullOrEmpty(Request.Query["token"]))
+                if (string.IsNullOrEmpty(args.Get("type")) || string.IsNullOrEmpty(args.Get("userId")) || string.IsNullOrEmpty(args.Get("flags")) || string.IsNullOrEmpty(args.Get("token")))
                     return (Response.AsJson(new Response.Error()
                     {
                         Message = "Missing arguments"
                     }, HttpStatusCode.BadRequest));
 
                 // Add information to the db
-                switch (Request.Query["type"].ToString())
+                switch (args.Get("type").ToString())
                 {
                     case "text":
-                        Program.P.db.AddTextAsync(Request.Query["flags"], Request.Query["userId"]);
+                        Program.P.db.AddTextAsync(args.Get("flags"), args.Get("userId")).GetAwaiter().GetResult();
                         break;
 
                     case "image":
-                        Program.P.db.AddImageAsync(Request.Query["flags"], Request.Query["userId"]);
+                        Program.P.db.AddImageAsync(args.Get("flags"), args.Get("userId")).GetAwaiter().GetResult();
                         break;
 
                     default:

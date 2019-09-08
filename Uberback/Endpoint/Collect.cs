@@ -16,14 +16,16 @@ namespace Uberback.Endpoint
         {
             Post("/", x =>
             {
+                var args = Common.ParseArgs(Request.Body);
+
                 // Error Handling
-                Common.Answer? error = Common.BasicCheck(Request.Query["token"]);
+                Common.Answer? error = Common.BasicCheck(args.Get("token"));
                 if (error.HasValue)
                     return (Response.AsJson(new Response.Error()
                     {
                         Message = error.Value.message
                     }, error.Value.code));
-                if (!string.IsNullOrEmpty(Request.Query["type"]) && Request.Query["type"] != "image" && Request.Query["type"] != "text")
+                if (!string.IsNullOrEmpty(args.Get("type")) && args.Get("type") != "image" && args.Get("type") != "text")
                     return (Response.AsJson(new Response.Error()
                     {
                         Message = "If set, type must be text or image"
@@ -31,21 +33,21 @@ namespace Uberback.Endpoint
 
                 // Getting datas
                 List<Response.Data> datas;
-                if (string.IsNullOrEmpty(Request.Query["type"]))
+                if (string.IsNullOrEmpty(args.Get("type")))
                 {
                     datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
                     datas.AddRange(GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList());
                 }
-                else if (Request.Query["type"] == "text")
+                else if (args.Get("type") == "text")
                     datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList();
                 else
                     datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
 
                 // from/to filters
-                if (!string.IsNullOrEmpty(Request.Query["from"]))
+                if (!string.IsNullOrEmpty(args.Get("from")))
                 {
                     DateTime from;
-                    if (!DateTime.TryParseExact(Request.Query["from"], "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out from))
+                    if (!DateTime.TryParseExact(args.Get("from"), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out from))
                     {
                         return (Response.AsJson(new Response.Error()
                         {
@@ -54,10 +56,10 @@ namespace Uberback.Endpoint
                     }
                     datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) < from);
                 }
-                if (!string.IsNullOrEmpty(Request.Query["to"]))
+                if (!string.IsNullOrEmpty(args.Get("to")))
                 {
                     DateTime to;
-                    if (!DateTime.TryParseExact(Request.Query["to"], "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out to))
+                    if (!DateTime.TryParseExact(args.Get("to"), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out to))
                     {
                         return (Response.AsJson(new Response.Error()
                         {

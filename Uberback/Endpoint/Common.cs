@@ -1,4 +1,7 @@
 ﻿using Nancy;
+using Nancy.Helpers;
+using System.Collections.Specialized;
+using System.IO;
 
 namespace Uberback.Endpoint
 {
@@ -17,6 +20,14 @@ namespace Uberback.Endpoint
             if (token != Program.P.token)
                 return new Answer(HttpStatusCode.Unauthorized, "Bad token");
             return null;
+        }
+
+        public static NameValueCollection ParseArgs(Stream bodyStream)
+        {
+            string body;
+            using (var reader = new StreamReader(bodyStream)) // x-www-form-urlencoded
+                body = reader.ReadToEnd();
+            return HttpUtility.ParseQueryString(body);
         }
 
         public struct Answer
