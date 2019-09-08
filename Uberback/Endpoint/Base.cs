@@ -8,7 +8,10 @@ namespace Uberback.Endpoint
         {
             Get("/", x =>
             {
-                return (Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent));
+                return (Response.AsJson(new Response.Information()
+                {
+                    Message = "Refer to https://github.com/Uberschutz/Uberback/wiki for the list of endpoints"
+                }, HttpStatusCode.OK));
             });
         }
     }

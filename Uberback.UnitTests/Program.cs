@@ -26,7 +26,7 @@ namespace Uberback.UnitTests
             var result = await browser.Get("/", with => {
                 with.HttpRequest();
             });
-            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
     }
 }
