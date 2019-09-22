@@ -41,7 +41,7 @@ namespace Uberback.Endpoint
                 else if (args.Get("type") == "text")
                     datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList();
                 else
-                    datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
+                    datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
 
                 // from/to filters
                 if (!string.IsNullOrEmpty(args.Get("from")))
@@ -72,7 +72,7 @@ namespace Uberback.Endpoint
                 return (Response.AsJson(new Response.Collect()
                 {
                     Data = datas.ToArray(),
-                    TotalToxicity = totalToxicity * 100 / datas.Count
+                    TotalToxicity = datas.Count != 0 ? totalToxicity * 100 / datas.Count : 0
                 }));
             });
         }
