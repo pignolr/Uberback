@@ -14,7 +14,7 @@ namespace Uberback.Endpoint
         /// </summary>
         public Collect() : base("/collect")
         {
-            Post("/", x =>
+            base.Post("/", x =>
             {
                 var args = Common.ParseArgs(Request.Body);
 
@@ -63,11 +63,16 @@ namespace Uberback.Endpoint
                     {
                         return (Response.AsJson(new Response.Error()
                         {
-                            Message = "From must be in the format yyyyMMdd"
+                            Message = "To must be in the format yyyyMMdd"
                         }, HttpStatusCode.BadRequest));
                     }
                     datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) > to);
                 }
+
+                var paginationError = ExtractDataFromPagination(args, datas);
+                if (paginationError != null)
+                    return paginationError;
+
                 int totalToxicity = datas.Where(y => y.Flags != "SAFE").Count();
                 return (Response.AsJson(new Response.Collect()
                 {
@@ -75,6 +80,48 @@ namespace Uberback.Endpoint
                     TotalToxicity = datas.Count != 0 ? totalToxicity * 100 / datas.Count : 0
                 }));
             });
+        }
+
+        private Nancy.Response ExtractDataFromPagination(System.Collections.Specialized.NameValueCollection args, List<Response.Data> datas)
+        {
+            int nbElem = -1;
+            int page = 1;
+            if (!string.IsNullOrEmpty(args.Get("nbelem")))
+            {
+                if (!int.TryParse(args.Get("nbelem"), out nbElem) || (nbElem <= 0 && nbElem != -1))
+                {
+                    return (Response.AsJson(new Response.Error()
+                    {
+                        Message = "Nbelem must be a positive integer"
+                    }, HttpStatusCode.BadRequest));
+                }
+            }
+            if (!string.IsNullOrEmpty(args.Get("page")))
+            {
+                if (!int.TryParse(args.Get("page"), out page) || page <= 0)
+                {
+                    return (Response.AsJson(new Response.Error()
+                    {
+                        Message = "Page must be a positive integer"
+                    }, HttpStatusCode.BadRequest));
+                }
+                if (nbElem == -1)
+                    nbElem = 20;
+                if (datas.Count() <= (page - 1) * nbElem)
+                {
+                    return (Response.AsJson(new Response.Error()
+                    {
+                        Message = "Page is Invalid"
+                    }, HttpStatusCode.BadRequest));
+                }
+            }
+            if (nbElem == -1)
+                return null;
+
+            datas.RemoveRange(0, (page - 1) * nbElem);
+            if (datas.Count() > nbElem)
+                datas.RemoveRange(nbElem, datas.Count() - nbElem);
+            return null;
         }
 
         /// <summary>
