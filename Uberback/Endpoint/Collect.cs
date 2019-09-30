@@ -68,11 +68,28 @@ namespace Uberback.Endpoint
                     }
                     datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) > to);
                 }
-                int totalToxicity = datas.Where(y => y.Flags != "SAFE").Count();
+                Dictionary<string, double> flags = new Dictionary<string, double>();
+                int counter = 0;
+                foreach (var elem in datas)
+                {
+                    foreach (string s in elem.Flags.Split('|'))
+                    {
+                        if (!flags.ContainsKey(s))
+                            flags.Add(s, 1);
+                        else
+                            flags[s]++;
+                    }
+                    counter++;
+                }
+                Dictionary<string, double> finalFlags = new Dictionary<string, double>();
+                foreach (var elem in flags)
+                {
+                    finalFlags.Add(elem.Key, elem.Value * 100 / counter);
+                }
                 return (Response.AsJson(new Response.Collect()
                 {
                     Data = datas.ToArray(),
-                    TotalToxicity = totalToxicity * 100 / datas.Count
+                    FlagsPercentage = finalFlags
                 }));
             });
         }

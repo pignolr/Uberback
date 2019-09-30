@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Uberback.Response
 {
@@ -8,6 +9,6 @@ namespace Uberback.Response
         public Data[] Data;
 
         [JsonProperty]
-        public double TotalToxicity;
+        public Dictionary<string, double> FlagsPercentage;
     }
 }
