@@ -41,7 +41,7 @@ namespace Uberback.Endpoint
                 else if (args.Get("type") == "text")
                     datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Text).ToList();
                 else
-                    datas = GetContent(Program.P.db.GetTextAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
+                    datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
 
                 // from/to filters
                 if (!string.IsNullOrEmpty(args.Get("from")))
