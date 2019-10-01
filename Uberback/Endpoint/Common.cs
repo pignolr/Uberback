@@ -1,5 +1,6 @@
 ﻿using Nancy;
 using Nancy.Helpers;
+using System;
 using System.Collections.Specialized;
 using System.IO;
 
@@ -40,5 +41,18 @@ namespace Uberback.Endpoint
             public HttpStatusCode code;
             public string message;
         }
+
+        public static bool IsAbsoluteUrl(string url)
+        => Uri.IsWellFormedUriString(url, UriKind.Absolute);
+
+        public static bool IsRelativeUrl(string url)
+        => Uri.IsWellFormedUriString(url, UriKind.Relative);
+
+        public static bool IsUrl(string url)
+        => Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute);
+
+        public static bool IsUserExists(string UserExist)
+        => true;
+
     }
 }
