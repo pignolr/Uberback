@@ -72,7 +72,7 @@ namespace Uberback.Endpoint
                 int counter = 0;
                 foreach (var elem in datas)
                 {
-                    foreach (string s in elem.Flags.Split('|'))
+                    foreach (string s in elem.Flags.Split(','))
                     {
                         if (!flags.ContainsKey(s))
                             flags.Add(s, 1);
