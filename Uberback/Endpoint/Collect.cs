@@ -43,6 +43,12 @@ namespace Uberback.Endpoint
                 else
                     datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
 
+                // Get only datas corresponding to an id
+                if (!string.IsNullOrEmpty(args.Get("id")))
+                {
+                    datas.RemoveAll(y => y.UserId != args.Get("id"));
+                }
+
                 // from/to filters
                 if (!string.IsNullOrEmpty(args.Get("from")))
                 {
@@ -73,11 +79,28 @@ namespace Uberback.Endpoint
                 if (paginationError != null)
                     return paginationError;
 
-                int totalToxicity = datas.Where(y => y.Flags != "SAFE").Count();
+                Dictionary<string, double> flags = new Dictionary<string, double>();
+                int counter = 0;
+                foreach (var elem in datas)
+                {
+                    foreach (string s in elem.Flags.Split(','))
+                    {
+                        if (!flags.ContainsKey(s))
+                            flags.Add(s, 1);
+                        else
+                            flags[s]++;
+                    }
+                    counter++;
+                }
+                Dictionary<string, double> finalFlags = new Dictionary<string, double>();
+                foreach (var elem in flags)
+                {
+                    finalFlags.Add(elem.Key, elem.Value * 100 / counter);
+                }
                 return (Response.AsJson(new Response.Collect()
                 {
                     Data = datas.ToArray(),
-                    TotalToxicity = datas.Count != 0 ? totalToxicity * 100 / datas.Count : 0
+                    FlagsPercentage = finalFlags
                 }));
             });
         }
