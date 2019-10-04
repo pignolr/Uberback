@@ -10,7 +10,7 @@ namespace Uberback.API
     class GoogleVisionV1ImageAnalyser: IImageAnalyser
     {
         private readonly ImageAnnotatorClient ImageClient;
-        public GoogleVisionV1ImageAnalyser(string imageAPIKeysFile = "Keys/imageAPI.json")
+        public GoogleVisionV1ImageAnalyser(string imageAPIKeysFile)
         {
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", imageAPIKeysFile);
             ImageClient = ImageAnnotatorClient.Create();

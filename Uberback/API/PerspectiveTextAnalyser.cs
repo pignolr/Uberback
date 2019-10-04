@@ -6,6 +6,7 @@ using System.Text;
 using System.Net.Http;
 using System.Web;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Uberback.API
 {
@@ -28,9 +29,9 @@ namespace Uberback.API
         private readonly string PerspectiveApiUrl;
         private readonly ITranslator Translator;
 
-        public PerspectiveTextAnalyser(string perspectiveAPIToken, ITranslator translator)
+        public PerspectiveTextAnalyser(string perspectiveAPITokenFile, ITranslator translator)
         {
-            PerspectiveApiToken = perspectiveAPIToken;
+            PerspectiveApiToken = File.ReadAllText(perspectiveAPITokenFile); ;
             PerspectiveApiUrl = "https://commentanalyzer.googleapis.com/v1alpha1";
 
             Translator = translator;
@@ -57,6 +58,8 @@ namespace Uberback.API
                 if (value >= s.Item2)
                     flags[s.Item1] = value.ToString("0.00");
             }
+            if (flags.Count == 0)
+                flags["SAFE"] = "1.00";
             return flags;
         }
 

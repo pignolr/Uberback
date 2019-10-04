@@ -13,6 +13,11 @@ namespace Uberback
 
         public string token { private set; get; }
 
+        public API.ITranslator Translator { private set; get; }
+        public API.ITextAnalyser TextAnalyser { private set; get; }
+        public API.IImageAnalyser ImageAnalyser { private set; get; }
+
+
         static async Task MainAsync(string[] args)
             => await new Program().InitAsync();
 
@@ -25,6 +30,10 @@ namespace Uberback
             AutoResetEvent autoEvent = new AutoResetEvent(false);
             LaunchServer(autoEvent);
             autoEvent.WaitOne();
+
+            Translator = new API.GoogleTranslator();
+            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", Translator);
+            ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/imageAPI.json");
         }
 
         private void LaunchServer(AutoResetEvent autoEvent)
