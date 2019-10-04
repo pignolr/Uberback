@@ -13,7 +13,7 @@ namespace Uberback
 
         public string token { private set; get; }
 
-        static async Task Main(string[] args)
+        static async Task MainAsync(string[] args)
             => await new Program().InitAsync();
 
         public async Task InitAsync()
