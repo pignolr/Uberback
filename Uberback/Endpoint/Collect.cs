@@ -43,6 +43,12 @@ namespace Uberback.Endpoint
                 else
                     datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
 
+                // Get only datas corresponding to an id
+                if (!string.IsNullOrEmpty(args.Get("id")))
+                {
+                    datas.RemoveAll(y => y.UserId != args.Get("id"));
+                }
+
                 // from/to filters
                 if (!string.IsNullOrEmpty(args.Get("from")))
                 {
