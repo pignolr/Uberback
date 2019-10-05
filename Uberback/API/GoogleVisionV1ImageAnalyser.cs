@@ -10,16 +10,15 @@ namespace Uberback.API
     class GoogleVisionV1ImageAnalyser: IImageAnalyser
     {
         private readonly ImageAnnotatorClient ImageClient;
-        public GoogleVisionV1ImageAnalyser(string imageAPIKeysFile)
+        public GoogleVisionV1ImageAnalyser(string googleAPIFile)
         {
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", imageAPIKeysFile);
+            if (Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS") == null)
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", googleAPIFile);
             ImageClient = ImageAnnotatorClient.Create();
         }
 
         public async Task<Dictionary<string, string>> AnalyseImageUrlAsync(string url)
         {
-            if (url.Length == 0)
-                return null;
             var image = await Image.FetchFromUriAsync(url);
             var response = await ImageClient.DetectSafeSearchAsync(image);
             return GetTrigeredFlags(response);

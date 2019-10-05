@@ -11,8 +11,10 @@ namespace Uberback.API
     {
         private readonly TranslationClient TranslationClient;
 
-        public GoogleTranslator()
+        public GoogleTranslator(string googleAPIFile)
         {
+            if (Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS") == null)
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", googleAPIFile);
             TranslationClient = TranslationClient.Create();
         }
 

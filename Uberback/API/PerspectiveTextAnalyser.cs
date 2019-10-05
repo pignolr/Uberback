@@ -13,7 +13,8 @@ namespace Uberback.API
     class PerspectiveTextAnalyser : ITextAnalyser
     {
         private static readonly string[] AllowedLanguage = new string[] {
-            "en", "fr", "es", "de"
+            "en"
+            //, "fr", "es", "de"
         };
         private static readonly Tuple<string, float>[] Categories = new Tuple<string, float>[] {
             new Tuple<string, float>("TOXICITY", .80f),
@@ -39,9 +40,6 @@ namespace Uberback.API
 
         public async Task<Dictionary<string, string>> AnalyseTextAsync(string text)
         {
-            if (text.Length == 0)
-                return null;
-
             // item1: translatedText, item2: detectedLanguage
             var translationResult = await TranslateTextIfNecessaryAsync(text);
             var jsonResponse = await AnalyseTextWithApiAsync(translationResult.Item1, translationResult.Item2);

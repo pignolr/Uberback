@@ -18,7 +18,7 @@ namespace Uberback
         public API.IImageAnalyser ImageAnalyser { private set; get; }
 
 
-        static async Task MainAsync(string[] args)
+        static async Task Main(string[] args)
             => await new Program().InitAsync();
 
         public async Task InitAsync()
@@ -27,13 +27,13 @@ namespace Uberback
             db = new Db();
             token = File.ReadAllText("Keys/token.txt");
             await db.InitAsync();
+            Translator = new API.GoogleTranslator("Keys/googleAPI.json");
+            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", Translator);
+            ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/googleAPI.json");
+
             AutoResetEvent autoEvent = new AutoResetEvent(false);
             LaunchServer(autoEvent);
             autoEvent.WaitOne();
-
-            Translator = new API.GoogleTranslator();
-            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", Translator);
-            ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/imageAPI.json");
         }
 
         private void LaunchServer(AutoResetEvent autoEvent)
