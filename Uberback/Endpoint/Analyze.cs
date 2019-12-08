@@ -1,10 +1,6 @@
 ﻿using Nancy;
-using RethinkDb.Driver.Net;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Uberback.Endpoint
@@ -27,6 +23,7 @@ namespace Uberback.Endpoint
                 var type = args.Get("type");
                 var data = args.Get("data");
 
+                return Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent);
                 if (type == "image")
                     return await AnalyseImageAsync(userId, urlSrc, data);
                 else if (type == "text")

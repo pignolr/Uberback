@@ -1,10 +1,4 @@
-﻿using Nancy;
-using RethinkDb.Driver.Net;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
-using System.Linq;
+﻿using System.Collections.Specialized;
 
 namespace Uberback.Validator
 {
@@ -30,7 +24,7 @@ namespace Uberback.Validator
                 return "The data is not provided";
             if (args.Get("type") == "image")
             {
-                // Image validate
+                // Not a valid way to check if the url is an image
                 if (!Endpoint.Common.IsAbsoluteUrl(data)
                     && !Endpoint.Common.IsRelativeUrl(data))
                     return "The data is not an url of image";

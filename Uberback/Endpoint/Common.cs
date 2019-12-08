@@ -3,6 +3,7 @@ using Nancy.Helpers;
 using System;
 using System.Collections.Specialized;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Uberback.Endpoint
 {
@@ -29,6 +30,14 @@ namespace Uberback.Endpoint
             using (var reader = new StreamReader(bodyStream)) // x-www-form-urlencoded
                 body = reader.ReadToEnd();
             return HttpUtility.ParseQueryString(body);
+        }
+
+        public static JsonObjectFormat ParseJsonArgs<JsonObjectFormat>(Stream bodyStream)
+        {
+            string body;
+            using (var reader = new StreamReader(bodyStream)) // x-www-form-urlencoded
+                body = reader.ReadToEnd();
+            return JsonConvert.DeserializeObject<JsonObjectFormat>(body);
         }
 
         public struct Answer
