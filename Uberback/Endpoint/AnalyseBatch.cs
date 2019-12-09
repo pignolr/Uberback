@@ -12,17 +12,22 @@ namespace Uberback.Endpoint
 {
     public class AnalyseBatchRequestData
     {
-        public string data { get; set; }
-        public string urlSrc { get; set; }
-        public int nb { get; set; }
+        public string Data { get; set; }
+        public int Nb { get; set; }
+    }
+
+    public class AnalyseBatchRequestUrlBatch
+    {
+        public string UrlSrc { get; set; }
+        public AnalyseBatchRequestData[] Images { get; set; }
+        public AnalyseBatchRequestData[] Texts { get; set; }
     }
 
     public class AnalyseBatchRequest
     {
-        public AnalyseBatchRequestData[] texts { get; set; }
-        public AnalyseBatchRequestData[] images { get; set; }
-        public string userId { get; set; }
-        public string token { get; set; }
+        public string Token { get; set; }
+        public string UserId { get; set; }
+        public AnalyseBatchRequestUrlBatch[] UrlBatchs { get; set; }
     }
 
     public class AnalyzeBatch : NancyModule
