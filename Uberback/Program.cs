@@ -8,6 +8,14 @@ namespace Uberback
 {
     class Program
     {
+        private Program() // Default ctor, used by Main
+        { }
+
+        public Program(string backToken) // Used by unit tests
+        {
+            InitVariables(backToken).GetAwaiter().GetResult();
+        }
+
         public static Program P;
         public Db db { private set; get; }
 
@@ -16,12 +24,17 @@ namespace Uberback
         static async Task Main(string[] args)
             => await new Program().InitAsync();
 
-        public async Task InitAsync()
+        private async Task InitVariables(string backToken)
         {
             P = this;
             db = new Db();
-            token = File.ReadAllText("Keys/token.txt");
+            token = backToken;
             await db.InitAsync();
+        }
+
+        private async Task InitAsync()
+        {
+            await InitVariables(File.ReadAllText("Keys/token.txt"));
             AutoResetEvent autoEvent = new AutoResetEvent(false);
             LaunchServer(autoEvent);
             autoEvent.WaitOne();
