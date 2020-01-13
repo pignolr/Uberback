@@ -1,4 +1,6 @@
-﻿using Nancy.Hosting.Self;
+﻿using Google.Cloud.Translation.V2;
+using Google.Cloud.Vision.V1;
+using Nancy.Hosting.Self;
 using System;
 using System.IO;
 using System.Threading;
@@ -20,6 +22,9 @@ namespace Uberback
         public Db db { private set; get; }
 
         public string token { private set; get; }
+        public ImageAnnotatorClient imageClient { private set; get; }
+        public TranslationClient translationClient { private set; get; }
+        public string perspectiveApi { private set; get; }
 
         static async Task Main(string[] args)
             => await new Program().InitAsync();
@@ -34,7 +39,14 @@ namespace Uberback
 
         private async Task InitAsync()
         {
+            if (!File.Exists("Keys/token.txt") || !File.Exists("Keys/perspectiveAPI.txt") || !File.Exists("Keys/imageAPI.json"))
+                throw new FileNotFoundException("Missing Key file");
+
             await InitVariables(File.ReadAllText("Keys/token.txt"));
+            perspectiveApi = File.ReadAllText("Keys/perspectiveAPI.txt");
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Keys/imageAPI.json");
+            imageClient = ImageAnnotatorClient.Create();
+            translationClient = TranslationClient.Create();
             AutoResetEvent autoEvent = new AutoResetEvent(false);
             LaunchServer(autoEvent);
             autoEvent.WaitOne();
