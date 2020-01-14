@@ -38,6 +38,8 @@ namespace Uberback
                 R.Db(dbName).TableCreate("Text").Run(conn);
             if (!await R.Db(dbName).TableList().Contains("Image").RunAsync<bool>(conn))
                 R.Db(dbName).TableCreate("Image").Run(conn);
+            if (!await R.Db(dbName).TableList().Contains("AnalysedText").RunAsync<bool>(conn))
+                R.Db(dbName).TableCreate("AnalysedText").Run(conn);
         }
 
         /// <summary>
@@ -47,8 +49,9 @@ namespace Uberback
         /// <param name="userId">User id</param>
         public async Task AddTextAsync(string flags, string userId)
         {
-            await R.Db(dbName).Table("Text").Insert(R.HashMap("id", await R.Db(dbName).Table("Text").Count().RunAsync(conn))
-                .With("UserId", userId)
+            await R.Db(dbName).Table("Text").Insert(R
+//                .HashMap("id", await R.Db(dbName).Table("Text").Count().RunAsync(conn))
+                .HashMap("UserId", userId)
                 .With("Flags", flags)
                 .With("DateTime", DateTime.Now.ToString("yyyyMMddHHmmss"))
                 ).RunAsync(conn);
@@ -61,11 +64,28 @@ namespace Uberback
         /// <param name="userId">User id</param>
         public async Task AddImageAsync(string flags, string userId)
         {
-            await R.Db(dbName).Table("Image").Insert(R.HashMap("id", await R.Db(dbName).Table("Image").Count().RunAsync(conn))
-                .With("UserId", userId)
+            await R.Db(dbName).Table("Image").Insert(R
+                //.HashMap("id", await R.Db(dbName).Table("Image").Count().RunAsync(conn))
+                .HashMap("UserId", userId)
                 .With("Flags", flags)
                 .With("DateTime", DateTime.Now.ToString("yyyyMMddHHmmss"))
                 ).RunAsync(conn);
+        }
+
+        /// <summary>
+        /// Add analysed text in the db
+        /// </summary>
+        /// <param name="flags">Flag triggered by the image, SAFE if none</param>
+        /// <param name="userId">User id</param>
+        public async Task AddAnalysedTextAsync(string flags, string hashedText)
+        {
+            await R.Db(dbName).Table("AnalysedText")
+                .Insert(new {
+                    HashedText = hashedText,
+                    Flags = flags,
+                    FirstDateTime = DateTime.Now.ToString("yyyyMMddHHmmss"),
+                    LastDateTime = DateTime.Now.ToString("yyyyMMddHHmmss")
+                }).RunAsync(conn);
         }
 
         /// <summary>
@@ -84,7 +104,42 @@ namespace Uberback
             return (await R.Db(dbName).Table("Image").RunAsync(conn));
         }
 
-        private readonly RethinkDB R;
+        /// <summary>
+        /// Get image table
+        /// </summary>
+        public async Task<string> GetFlagsFromAnalysedTextAsync(string hashedText)
+        {
+            return await R.Db(dbName).Table("AnalysedText")
+                .Filter(new{ HashedText = hashedText })
+                .GetField("Flags")
+                .Nth(0)
+                .RunAsync(conn);
+        }
+
+        /// <summary>
+        /// Get image table
+        /// </summary>
+        public async Task UpdateLastDateTimeOfAnalysedTextAsync(string hashedText)
+        {
+            await R.Db(dbName).Table("AnalysedText")
+                .Filter(new { HashedText = hashedText })
+                .Nth(0)
+                .Update(new { LastDateTime = DateTime.Now.ToString("yyyyMMddHHmmss") })
+                .RunAsync(conn);
+        }
+
+        /// <summary>
+        /// Get image table
+        /// </summary>
+        public async Task<bool> IsTextAnalysedAsync(string hashedText)
+        {
+            return await R.Db(dbName).Table("AnalysedText")
+                .Filter(new { HashedText = hashedText })
+                .Count().Gt(0)
+                .RunAsync(conn);
+        }
+
+    private readonly RethinkDB R;
         private Connection conn;
         private string dbName;
     }

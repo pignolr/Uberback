@@ -156,6 +156,7 @@
     <Compile Include="Response\Collect.cs" />
     <Compile Include="Response\Data.cs" />
     <Compile Include="Response\Empty.cs" />
+    <Compile Include="Response\ErrorArray.cs" />
     <Compile Include="Response\Information.cs" />
     <Compile Include="Response\Error.cs" />
     <Compile Include="Validator\Analyse.cs" />

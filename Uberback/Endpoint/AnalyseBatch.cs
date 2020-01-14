@@ -34,25 +34,50 @@ namespace Uberback.Endpoint
     {
         public AnalyzeBatch() : base("/analyzeBatch")
         {
-            base.Post("/", x =>
+            base.Post("/", async x =>
             {
                 AnalyseBatchRequest args;
-                
+                string error = null;
+
                 try
                 {
-                    string error;
                     args = Common.ParseJsonArgs<AnalyseBatchRequest>(Request.Body);
 
                     // Check request
                     if ((error = Validator.AnalyseBatch.ValidateRequest(args)) != null)
-                        return (Response.AsJson(new Response.Error() { Message = error }, HttpStatusCode.BadRequest));
+                        return Response.AsJson(new Response.Error() { Message = error }, HttpStatusCode.BadRequest);
                 }
                 catch (Exception e)
                 {
-                    return (Response.AsJson(new Response.Error() { Message = e.Message }, HttpStatusCode.BadRequest));
+                    return Response.AsJson(new Response.Error() { Message = e.Message }, HttpStatusCode.BadRequest);
                 }
+                //return Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent);
+
                 // Do request
-                return Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent);
+                var taskErrors = new List<Task<string>>();
+                foreach (var urlBatch in args.UrlBatchs) {
+                    if (urlBatch.Images != null) {
+                        foreach (var image in urlBatch.Images) {
+                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseImageAsync(args.UserId, urlBatch.UrlSrc, image.Data));
+                        }
+                    }
+                    if (urlBatch.Texts != null) {
+                        foreach (var text in urlBatch.Texts) {
+                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseTextAsync(args.UserId, urlBatch.UrlSrc, text.Data));
+                        }
+                    }
+                }
+                await Task.WhenAll(taskErrors);
+                var errorsList = new List<string>();
+                foreach (var response in taskErrors) {
+                    if (response.Result != null) {
+                        errorsList.Add(response.Result);
+                    }
+                }
+                if (errorsList.Count != 0)
+                    return Response.AsJson(new Response.ErrorArray() { Message = errorsList.ToArray() }, HttpStatusCode.BadRequest);
+                else
+                    return Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent);
             });
         }
     }

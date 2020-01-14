@@ -13,19 +13,41 @@ namespace Uberback.API
     class PerspectiveTextAnalyser : ITextAnalyser
     {
         private static readonly string[] AllowedLanguage = new string[] {
-            "en"
-            //, "fr", "es", "de"
+            "en",
+            "fr",
+            "es",
         };
-        private static readonly Tuple<string, float>[] Categories = new Tuple<string, float>[] {
-            new Tuple<string, float>("TOXICITY", .80f),
-            new Tuple<string, float>("SEVERE_TOXICITY", .60f),
-            new Tuple<string, float>("IDENTITY_ATTACK", .60f),
-            new Tuple<string, float>("INSULT", .60f),
-            new Tuple<string, float>("PROFANITY", .80f),
-            new Tuple<string, float>("THREAT", .60f),
-            new Tuple<string, float>("INFLAMMATORY", .60f),
-            new Tuple<string, float>("OBSCENE", .9f)
-        };
+        private static readonly Dictionary<string, List<Tuple<string, float>>> Categories =
+            new Dictionary<string, List<Tuple<string, float>>> {
+                {
+                    "en",
+                    new List<Tuple<string, float>> {
+                        new Tuple<string, float>("TOXICITY", .80f),
+                        new Tuple<string, float>("SEVERE_TOXICITY", .60f),
+                        new Tuple<string, float>("IDENTITY_ATTACK", .60f),
+                        new Tuple<string, float>("INSULT", .60f),
+                        new Tuple<string, float>("PROFANITY", .80f),
+                        new Tuple<string, float>("THREAT", .60f),
+                        new Tuple<string, float>("INFLAMMATORY", .60f),
+                        new Tuple<string, float>("OBSCENE", .9f)
+                    }
+                },
+                {
+                    "fr",
+                    new List<Tuple<string, float>> {
+                        new Tuple<string, float>("TOXICITY", .80f),
+                        new Tuple<string, float>("SEVERE_TOXICITY", .60f),
+                    }
+                },
+                {
+                "es",
+                    new List<Tuple<string, float>> {
+                        new Tuple<string, float>("TOXICITY", .80f),
+                        new Tuple<string, float>("SEVERE_TOXICITY", .60f),
+                    }
+                }
+
+            };
         private readonly string PerspectiveApiToken;
         private readonly string PerspectiveApiUrl;
         private readonly ITranslator Translator;
@@ -43,14 +65,14 @@ namespace Uberback.API
             // item1: translatedText, item2: detectedLanguage
             var translationResult = await TranslateTextIfNecessaryAsync(text);
             var jsonResponse = await AnalyseTextWithApiAsync(translationResult.Item1, translationResult.Item2);
-            return GetTrigeredFlags(jsonResponse);
+            return GetTrigeredFlags(jsonResponse, translationResult.Item2);
         }
 
-        private Dictionary<string, string> GetTrigeredFlags(dynamic jsonResponse)
+        private Dictionary<string, string> GetTrigeredFlags(dynamic jsonResponse, string language)
         {
             var flags = new Dictionary<string, string>();
 
-            foreach (var s in Categories)
+            foreach (var s in Categories[language])
             {
                 double value = jsonResponse.attributeScores[s.Item1].summaryScore.value;
                 if (value >= s.Item2)
@@ -69,7 +91,7 @@ namespace Uberback.API
             var jsonContent = "{comment: {text: \"" + @text + "\"},"
                 + "languages: [\"" + @language + "\"],"
                 + "requestedAttributes: {"
-                + string.Join(":{}, ", Categories.Select(x => x.Item1))
+                + string.Join(":{}, ", Categories[language].Select(x => x.Item1))
                 + ":{}} }";
             var jsonRequest = JsonConvert.DeserializeObject(jsonContent).ToString();
             var request = new StringContent(jsonRequest, Encoding.UTF8, "application/json");

@@ -13,8 +13,7 @@ namespace Uberback.Validator
             if ((error = ValidateBatchRequest(args)) != null
                 ||(error = ValidateToken(args)) != null
                 || (error = ValidateUserId(args)) != null
-                || (error = ValidateUrlBatch(args)) != null
-                )
+                || (error = ValidateUrlBatch(args)) != null)
                 return error;
             return null;
         }
@@ -33,11 +32,10 @@ namespace Uberback.Validator
             foreach (var urlBatch in args.UrlBatchs)
             {
                 if (!Endpoint.Common.IsAbsoluteUrl(urlBatch.UrlSrc)
-                        && !Endpoint.Common.IsRelativeUrl(urlBatch.UrlSrc))
+                    && !Endpoint.Common.IsRelativeUrl(urlBatch.UrlSrc))
                     return "Invalid item in the list of batch of url: \"urlSrc\" must be an url";
                 if ((error = ValidateImages(urlBatch, urlBatch.UrlSrc)) != null
-                    || (error = ValidateTexts(urlBatch, urlBatch.UrlSrc)) != null
-                    )
+                    || (error = ValidateTexts(urlBatch, urlBatch.UrlSrc)) != null)
                     return error;
             }
             return null;
@@ -55,7 +53,7 @@ namespace Uberback.Validator
 /*                    if (!Endpoint.Common.IsAbsoluteUrl(item.data)
                     && !Endpoint.Common.IsRelativeUrl(item.data))
                     return "Invalid item in the list of images: \"data\" must be an url";*/
-                }
+            }
             return null;
         }
 
