@@ -53,10 +53,10 @@ namespace Uberback.Endpoint
                                 if (value >= s.Item2)
                                     flags.Add(s.Item1);
                             }
-                            if (flags.Count > 0)
+                            if (flags.Count == 0)
                                 flags.Add("SAFE");
                         }
-                        Program.P.db.AddTextAsync(string.Join("|", flags), args.Get("userId")).GetAwaiter().GetResult();
+                        Program.P.db.AddTextAsync(string.Join(",", flags), args.Get("userId")).GetAwaiter().GetResult();
                         break;
 
                     case "image":
@@ -72,7 +72,7 @@ namespace Uberback.Endpoint
                             flags.Add("Violence");
                         if (flags.Count == 0)
                             flags.Add("SAFE");
-                        Program.P.db.AddImageAsync(string.Join("|", flags), args.Get("userId")).GetAwaiter().GetResult();
+                        Program.P.db.AddImageAsync(string.Join(",", flags), args.Get("userId")).GetAwaiter().GetResult();
                         break;
 
                     default:
