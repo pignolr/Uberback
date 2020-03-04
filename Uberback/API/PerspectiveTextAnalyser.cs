@@ -7,57 +7,30 @@ using System.Net.Http;
 using System.Web;
 using System.Threading.Tasks;
 using System.IO;
+using System.Xml;
+using System.Globalization;
 
 namespace Uberback.API
 {
     class PerspectiveTextAnalyser : ITextAnalyser
     {
-        private static readonly string[] AllowedLanguage = new string[] {
-            "en",
-            "fr",
-            "es",
-        };
-        private static readonly Dictionary<string, List<Tuple<string, float>>> Categories =
-            new Dictionary<string, List<Tuple<string, float>>> {
-                {
-                    "en",
-                    new List<Tuple<string, float>> {
-                        new Tuple<string, float>("TOXICITY", .80f),
-                        new Tuple<string, float>("SEVERE_TOXICITY", .60f),
-                        new Tuple<string, float>("IDENTITY_ATTACK", .60f),
-                        new Tuple<string, float>("INSULT", .60f),
-                        new Tuple<string, float>("PROFANITY", .80f),
-                        new Tuple<string, float>("THREAT", .60f),
-                        new Tuple<string, float>("INFLAMMATORY", .60f),
-                        new Tuple<string, float>("OBSCENE", .9f)
-                    }
-                },
-                {
-                    "fr",
-                    new List<Tuple<string, float>> {
-                        new Tuple<string, float>("TOXICITY", .80f),
-                        new Tuple<string, float>("SEVERE_TOXICITY", .60f),
-                    }
-                },
-                {
-                "es",
-                    new List<Tuple<string, float>> {
-                        new Tuple<string, float>("TOXICITY", .80f),
-                        new Tuple<string, float>("SEVERE_TOXICITY", .60f),
-                    }
-                }
-
-            };
+        private static string[] AllowedLanguage;
+        private static Dictionary<string, List<Tuple<string, float>>> Categories;
         private readonly string PerspectiveApiToken;
         private readonly string PerspectiveApiUrl;
         private readonly ITranslator Translator;
+        private PerspectiveTextAnalyserConfig Config;
 
-        public PerspectiveTextAnalyser(string perspectiveAPITokenFile, ITranslator translator)
+        public PerspectiveTextAnalyser(string perspectiveAPITokenFile, string configFileName, ITranslator translator)
         {
             PerspectiveApiToken = File.ReadAllText(perspectiveAPITokenFile); ;
             PerspectiveApiUrl = "https://commentanalyzer.googleapis.com/v1alpha1";
 
             Translator = translator;
+
+            Config = new PerspectiveTextAnalyserConfig(configFileName);
+            Categories = Config.Categories;
+            AllowedLanguage = Config.AllowedLanguage;
         }
 
         public async Task<Dictionary<string, string>> AnalyseTextAsync(string text)
@@ -106,7 +79,7 @@ namespace Uberback.API
         {
             var detectedLanguage = await Translator.DetectLanguageAsync(text);
             if (!AllowedLanguage.Contains(detectedLanguage))
-                return new Tuple<string, string>(await Translator.TranslateTextAsync(text, AllowedLanguage[0]), "en");
+                return new Tuple<string, string>(await Translator.TranslateTextAsync(text, AllowedLanguage[0]), AllowedLanguage[0]);
             else
                 return new Tuple<string, string>(text, detectedLanguage);
         }

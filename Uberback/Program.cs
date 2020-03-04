@@ -28,7 +28,7 @@ namespace Uberback
             token = File.ReadAllText("Keys/token.txt");
             await db.InitAsync();
             Translator = new API.GoogleTranslator("Keys/googleAPI.json");
-            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", Translator);
+            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/GoogleVisionV1ImageAnalyserConfig.xml", Translator);
             ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/googleAPI.json");
 
             AutoResetEvent autoEvent = new AutoResetEvent(false);

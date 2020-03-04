@@ -144,6 +144,7 @@
     <Compile Include="API\ITextAnalyser.cs" />
     <Compile Include="API\ITranslator.cs" />
     <Compile Include="API\GoogleTranslator.cs" />
+    <Compile Include="API\PerspectiveTextAnalyserConfig.cs" />
     <Compile Include="Db.cs" />
     <Compile Include="Endpoint\AnalyseBatch.cs" />
     <Compile Include="Endpoint\Base.cs" />
