@@ -45,12 +45,13 @@ namespace Uberback
         /// </summary>
         /// <param name="flags">Flag triggered by the text, SAFE if none</param>
         /// <param name="userId">User id</param>
-        public async Task AddTextAsync(string flags, string userId)
+        public async Task AddTextAsync(string flags, string userId, string service)
         {
             await R.Db(dbName).Table("Text").Insert(R.HashMap("id", await R.Db(dbName).Table("Text").Count().RunAsync(conn))
                 .With("UserId", userId)
                 .With("Flags", flags)
                 .With("DateTime", DateTime.Now.ToString("yyyyMMddHHmmss"))
+                .With("Service", service)
                 ).RunAsync(conn);
         }
 
@@ -59,12 +60,13 @@ namespace Uberback
         /// </summary>
         /// <param name="flags">Flag triggered by the image, SAFE if none</param>
         /// <param name="userId">User id</param>
-        public async Task AddImageAsync(string flags, string userId)
+        public async Task AddImageAsync(string flags, string userId, string service)
         {
             await R.Db(dbName).Table("Image").Insert(R.HashMap("id", await R.Db(dbName).Table("Image").Count().RunAsync(conn))
                 .With("UserId", userId)
                 .With("Flags", flags)
                 .With("DateTime", DateTime.Now.ToString("yyyyMMddHHmmss"))
+                .With("Service", service)
                 ).RunAsync(conn);
         }
 

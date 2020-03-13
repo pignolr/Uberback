@@ -27,7 +27,7 @@ namespace Uberback.Endpoint
                     {
                         Message = error.Value.message
                     }, error.Value.code));
-                if (string.IsNullOrEmpty(args.Get("type")) || string.IsNullOrEmpty(args.Get("userId")) || string.IsNullOrEmpty(args.Get("content")) || string.IsNullOrEmpty(args.Get("token")))
+                if (string.IsNullOrEmpty(args.Get("type")) || string.IsNullOrEmpty(args.Get("userId")) || string.IsNullOrEmpty(args.Get("content")) || string.IsNullOrEmpty(args.Get("token")) || string.IsNullOrEmpty(args.Get("service")))
                     return (Response.AsJson(new Response.Error()
                     {
                         Message = "Missing arguments"
@@ -56,7 +56,7 @@ namespace Uberback.Endpoint
                             if (flags.Count == 0)
                                 flags.Add("SAFE");
                         }
-                        Program.P.db.AddTextAsync(string.Join(",", flags), args.Get("userId")).GetAwaiter().GetResult();
+                        Program.P.db.AddTextAsync(string.Join(",", flags), args.Get("userId"), args.Get("service")).GetAwaiter().GetResult();
                         break;
 
                     case "image":
@@ -72,7 +72,7 @@ namespace Uberback.Endpoint
                             flags.Add("Violence");
                         if (flags.Count == 0)
                             flags.Add("SAFE");
-                        Program.P.db.AddImageAsync(string.Join(",", flags), args.Get("userId")).GetAwaiter().GetResult();
+                        Program.P.db.AddImageAsync(string.Join(",", flags), args.Get("userId"), args.Get("service")).GetAwaiter().GetResult();
                         break;
 
                     default:

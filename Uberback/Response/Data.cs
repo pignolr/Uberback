@@ -20,6 +20,9 @@ namespace Uberback.Response
         public string UserId;
 
         [JsonProperty]
+        public string Service;
+
+        [JsonProperty]
         public DataType Type;
     }
 }

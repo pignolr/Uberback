@@ -49,6 +49,12 @@ namespace Uberback.Endpoint
                     datas.RemoveAll(y => y.UserId != args.Get("userId"));
                 }
 
+                // Get only datas corresponding to an id
+                if (!string.IsNullOrEmpty(args.Get("service")))
+                {
+                    datas.RemoveAll(y => y.Service != args.Get("service"));
+                }
+
                 // from/to filters
                 if (!string.IsNullOrEmpty(args.Get("from")))
                 {
@@ -113,7 +119,8 @@ namespace Uberback.Endpoint
                     DateTime = elem.DateTime,
                     Flags = elem.Flags,
                     UserId = elem.UserId,
-                    Type = type
+                    Type = type,
+                    Service = elem.Service
                 });
             }
             return (datas.ToArray());
