@@ -85,12 +85,17 @@ namespace Uberback.Endpoint
                 Dictionary<string, Dictionary<string, double>> flags = new Dictionary<string, Dictionary<string, double>>();
                 flags.Add("All", new Dictionary<string, double>());
                 Dictionary<string, FlagData[]> finalDatas = new Dictionary<string, FlagData[]>();
-                int counter = 0;
+                Dictionary<string, int> counters = new Dictionary<string, int>();
                 foreach (var elem in datas)
                 {
                     if (!flags.ContainsKey(elem.Service))
                     {
                         flags.Add(elem.Service, new Dictionary<string, double>());
+                        counters.Add(elem.Service, 1);
+                    }
+                    else
+                    {
+                        counters[elem.Service]++;
                     }
                     foreach (string s in elem.Flags.Split(','))
                     {
@@ -99,7 +104,6 @@ namespace Uberback.Endpoint
                         else
                             flags[elem.Service][s]++;
                     }
-                    counter++;
                 }
                 foreach (var elem in flags)
                 {
@@ -109,7 +113,7 @@ namespace Uberback.Endpoint
                         tmpDatas.Add(new FlagData()
                         {
                             Name = elem2.Key,
-                            Value = elem2.Value
+                            Value = elem2.Value / counters[elem.Key] * 100f
                         });
                     }
                     finalDatas.Add(elem.Key, tmpDatas.ToArray());
