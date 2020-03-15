@@ -94,7 +94,7 @@ namespace Uberback.Endpoint
                     }
                     foreach (string s in elem.Flags.Split(','))
                     {
-                        if (!flags.ContainsKey(s))
+                        if (!flags[elem.Service].ContainsKey(s))
                             flags[elem.Service].Add(s, 1);
                         else
                             flags[elem.Service][s]++;
