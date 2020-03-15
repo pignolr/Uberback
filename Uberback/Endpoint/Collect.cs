@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Uberback.Response;
 
 namespace Uberback.Endpoint
 {
@@ -50,9 +51,10 @@ namespace Uberback.Endpoint
                 }
 
                 // Get only datas corresponding to an id
-                if (!string.IsNullOrEmpty(args.Get("service")))
+                if (!string.IsNullOrEmpty(args.Get("services")))
                 {
-                    datas.RemoveAll(y => y.Service != args.Get("service"));
+                    string[] services = args.Get("services").Split(';');
+                    datas.RemoveAll(y => !services.Any(z => z == y.Service));
                 }
 
                 // from/to filters
@@ -80,28 +82,41 @@ namespace Uberback.Endpoint
                     }
                     datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) > to);
                 }
-                Dictionary<string, double> flags = new Dictionary<string, double>();
+                Dictionary<string, Dictionary<string, double>> flags = new Dictionary<string, Dictionary<string, double>>();
+                flags.Add("All", new Dictionary<string, double>());
+                Dictionary<string, FlagData[]> finalDatas = new Dictionary<string, FlagData[]>();
                 int counter = 0;
                 foreach (var elem in datas)
                 {
+                    if (!flags.ContainsKey(elem.Service))
+                    {
+                        flags.Add(elem.Service, new Dictionary<string, double>());
+                    }
                     foreach (string s in elem.Flags.Split(','))
                     {
                         if (!flags.ContainsKey(s))
-                            flags.Add(s, 1);
+                            flags[elem.Service].Add(s, 1);
                         else
-                            flags[s]++;
+                            flags[elem.Service][s]++;
                     }
                     counter++;
                 }
-                Dictionary<string, double> finalFlags = new Dictionary<string, double>();
                 foreach (var elem in flags)
                 {
-                    finalFlags.Add(elem.Key, elem.Value * 100 / counter);
+                    List<FlagData> tmpDatas = new List<FlagData>();
+                    foreach (var elem2 in elem.Value)
+                    {
+                        tmpDatas.Add(new FlagData()
+                        {
+                            Name = elem2.Key,
+                            Value = elem2.Value
+                        });
+                    }
+                    finalDatas.Add(elem.Key, tmpDatas.ToArray());
                 }
                 return (Response.AsJson(new Response.Collect()
                 {
-                    Data = datas.ToArray(),
-                    FlagsPercentage = finalFlags
+                    Datas = finalDatas
                 }));
             });
         }

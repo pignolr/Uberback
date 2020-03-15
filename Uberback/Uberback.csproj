@@ -130,6 +130,7 @@
     <Compile Include="Response\Empty.cs" />
     <Compile Include="Response\Information.cs" />
     <Compile Include="Response\Error.cs" />
+    <Compile Include="Response\FlagData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

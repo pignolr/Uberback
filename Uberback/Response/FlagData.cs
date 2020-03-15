@@ -3,9 +3,12 @@ using System.Collections.Generic;
 
 namespace Uberback.Response
 {
-    public class Collect
+    public class FlagData
     {
         [JsonProperty]
-        public Dictionary<string, FlagData[]> Datas;
+        public string Name;
+
+        [JsonProperty]
+        public double Value;
     }
 }
