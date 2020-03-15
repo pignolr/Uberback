@@ -82,10 +82,11 @@ namespace Uberback.Endpoint
                     }
                     datas.RemoveAll(y => DateTime.ParseExact(y.DateTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture) > to);
                 }
-                Dictionary<string, Dictionary<string, double>> flags = new Dictionary<string, Dictionary<string, double>>();
-                flags.Add("All", new Dictionary<string, double>());
                 Dictionary<string, FlagData[]> finalDatas = new Dictionary<string, FlagData[]>();
+                Dictionary<string, Dictionary<string, double>> flags = new Dictionary<string, Dictionary<string, double>>();
                 Dictionary<string, int> counters = new Dictionary<string, int>();
+                counters.Add("All", 0);
+                flags.Add("All", new Dictionary<string, double>());
                 foreach (var elem in datas)
                 {
                     if (!flags.ContainsKey(elem.Service))
@@ -97,12 +98,17 @@ namespace Uberback.Endpoint
                     {
                         counters[elem.Service]++;
                     }
+                    counters["All"]++;
                     foreach (string s in elem.Flags.Split(','))
                     {
                         if (!flags[elem.Service].ContainsKey(s))
                             flags[elem.Service].Add(s, 1);
                         else
                             flags[elem.Service][s]++;
+                        if (!flags["All"].ContainsKey(s))
+                            flags["All"].Add(s, 1);
+                        else
+                            flags["All"][s]++;
                     }
                 }
                 foreach (var elem in flags)
