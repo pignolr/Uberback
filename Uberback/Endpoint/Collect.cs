@@ -114,12 +114,14 @@ namespace Uberback.Endpoint
                 foreach (var elem in flags)
                 {
                     List<FlagData> tmpDatas = new List<FlagData>();
+                    double sum = elem.Value.Sum(y => y.Value);
                     foreach (var elem2 in elem.Value)
                     {
                         tmpDatas.Add(new FlagData()
                         {
                             Name = elem2.Key,
-                            Value = elem2.Value / counters[elem.Key] * 100f
+                            Value = elem2.Value / counters[elem.Key] * 100f,
+                            PercentValue = elem2.Value / sum * 100f
                         });
                     }
                     finalDatas.Add(elem.Key, tmpDatas.ToArray());

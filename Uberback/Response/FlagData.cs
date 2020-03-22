@@ -10,5 +10,8 @@ namespace Uberback.Response
 
         [JsonProperty]
         public double Value;
+
+        [JsonProperty]
+        public double PercentValue;
     }
 }
