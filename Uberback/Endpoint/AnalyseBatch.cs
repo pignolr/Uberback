@@ -27,6 +27,7 @@ namespace Uberback.Endpoint
     {
         public string Token { get; set; }
         public string UserId { get; set; }
+        public string Service { get; set; }
         public AnalyseBatchRequestUrlBatch[] UrlBatchs { get; set; }
     }
 
@@ -37,33 +38,31 @@ namespace Uberback.Endpoint
             base.Post("/", async x =>
             {
                 AnalyseBatchRequest args;
-                string error = null;
-
                 try
                 {
                     args = Common.ParseJsonArgs<AnalyseBatchRequest>(Request.Body);
 
                     // Check request
+                    Validator.AnalyseBatch.ValidatorResponse error = null;
                     if ((error = Validator.AnalyseBatch.ValidateRequest(args)) != null)
-                        return Response.AsJson(new Response.Error() { Message = error }, HttpStatusCode.BadRequest);
+                        return Response.AsJson(new Response.Error() { Message = error.Message }, error.StatusCode);
                 }
                 catch (Exception e)
                 {
                     return Response.AsJson(new Response.Error() { Message = e.Message }, HttpStatusCode.BadRequest);
                 }
-                //return Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent);
 
                 // Do request
                 var taskErrors = new List<Task<string>>();
                 foreach (var urlBatch in args.UrlBatchs) {
                     if (urlBatch.Images != null) {
                         foreach (var image in urlBatch.Images) {
-                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseImageAsync(args.UserId, urlBatch.UrlSrc, image.Data));
+                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseImageAsync(args.UserId, urlBatch.UrlSrc, image.Data, args.Service));
                         }
                     }
                     if (urlBatch.Texts != null) {
                         foreach (var text in urlBatch.Texts) {
-                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseTextAsync(args.UserId, urlBatch.UrlSrc, text.Data));
+                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseTextAsync(args.UserId, urlBatch.UrlSrc, text.Data, args.Service));
                         }
                     }
                 }

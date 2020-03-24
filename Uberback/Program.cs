@@ -40,15 +40,11 @@ namespace Uberback
             db = new Db();
             token = backToken;
             await db.InitAsync();
-
-            Translator = new API.GoogleTranslator("Keys/googleAPI.json");
-            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/GoogleVisionV1ImageAnalyserConfig.xml", Translator);
-            ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/googleAPI.json");
         }
 
         private async Task InitAsync()
         {
-            if (!File.Exists("Keys/token.txt") || !File.Exists("Keys/perspectiveAPI.txt") || !File.Exists("Keys/imageAPI.json"))
+            if (!File.Exists("Keys/token.txt") || !File.Exists("Keys/perspectiveAPI.txt") || !File.Exists("Keys/imageAPI.json") || !File.Exists("Keys/googleAPI.json"))
                 throw new FileNotFoundException("Missing Key file");
 
             await InitVariables(File.ReadAllText("Keys/token.txt"));
@@ -56,6 +52,11 @@ namespace Uberback
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Keys/imageAPI.json");
             imageClient = ImageAnnotatorClient.Create();
             translationClient = TranslationClient.Create();
+
+            Translator = new API.GoogleTranslator("Keys/googleAPI.json");
+            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/GoogleVisionV1ImageAnalyserConfig.xml", Translator);
+            ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/googleAPI.json");
+
             AutoResetEvent autoEvent = new AutoResetEvent(false);
             LaunchServer(autoEvent);
             autoEvent.WaitOne();
