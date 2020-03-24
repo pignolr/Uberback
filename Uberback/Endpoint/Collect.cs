@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Uberback.Response;
 
 namespace Uberback.Endpoint
 {
@@ -44,9 +45,16 @@ namespace Uberback.Endpoint
                     datas = GetContent(Program.P.db.GetImageAsync().GetAwaiter().GetResult(), Uberback.Response.DataType.Image).ToList();
 
                 // Get only datas corresponding to an id
-                if (!string.IsNullOrEmpty(args.Get("id")))
+                if (!string.IsNullOrEmpty(args.Get("userId")))
                 {
-                    datas.RemoveAll(y => y.UserId != args.Get("id"));
+                    datas.RemoveAll(y => y.UserId != args.Get("userId"));
+                }
+
+                // Get only datas corresponding to an id
+                if (!string.IsNullOrEmpty(args.Get("services")))
+                {
+                    string[] services = args.Get("services").Split(';');
+                    datas.RemoveAll(y => !services.Any(z => z == y.Service));
                 }
 
                 // from/to filters
@@ -79,28 +87,53 @@ namespace Uberback.Endpoint
                 if (paginationError != null)
                     return paginationError;
 
-                Dictionary<string, double> flags = new Dictionary<string, double>();
-                int counter = 0;
+                Dictionary<string, FlagData[]> finalDatas = new Dictionary<string, FlagData[]>();
+                Dictionary<string, Dictionary<string, double>> flags = new Dictionary<string, Dictionary<string, double>>();
+                Dictionary<string, int> counters = new Dictionary<string, int>();
+                counters.Add("All", 0);
+                flags.Add("All", new Dictionary<string, double>());
                 foreach (var elem in datas)
                 {
+                    if (!flags.ContainsKey(elem.Service))
+                    {
+                        flags.Add(elem.Service, new Dictionary<string, double>());
+                        counters.Add(elem.Service, 1);
+                    }
+                    else
+                    {
+                        counters[elem.Service]++;
+                    }
+                    counters["All"]++;
                     foreach (string s in elem.Flags.Split(','))
                     {
-                        if (!flags.ContainsKey(s))
-                            flags.Add(s, 1);
+                        if (!flags[elem.Service].ContainsKey(s))
+                            flags[elem.Service].Add(s, 1);
                         else
-                            flags[s]++;
+                            flags[elem.Service][s]++;
+                        if (!flags["All"].ContainsKey(s))
+                            flags["All"].Add(s, 1);
+                        else
+                            flags["All"][s]++;
                     }
-                    counter++;
                 }
-                Dictionary<string, double> finalFlags = new Dictionary<string, double>();
                 foreach (var elem in flags)
                 {
-                    finalFlags.Add(elem.Key, elem.Value * 100 / counter);
+                    List<FlagData> tmpDatas = new List<FlagData>();
+                    double sum = elem.Value.Sum(y => y.Value);
+                    foreach (var elem2 in elem.Value)
+                    {
+                        tmpDatas.Add(new FlagData()
+                        {
+                            Name = elem2.Key,
+                            Value = elem2.Value / counters[elem.Key] * 100f,
+                            PercentValue = elem2.Value / sum * 100f
+                        });
+                    }
+                    finalDatas.Add(elem.Key, tmpDatas.ToArray());
                 }
                 return (Response.AsJson(new Response.Collect()
                 {
-                    Data = datas.ToArray(),
-                    FlagsPercentage = finalFlags
+                    Datas = finalDatas
                 }));
             });
         }
@@ -160,7 +193,8 @@ namespace Uberback.Endpoint
                     DateTime = elem.DateTime,
                     Flags = elem.Flags,
                     UserId = elem.UserId,
-                    Type = type
+                    Type = type,
+                    Service = elem.Service
                 });
             }
             return (datas.ToArray());
