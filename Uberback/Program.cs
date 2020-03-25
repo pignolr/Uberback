@@ -43,12 +43,12 @@ namespace Uberback
 
         private async Task InitAsync()
         {
-            if (!File.Exists("Keys/token.txt") || !File.Exists("Keys/perspectiveAPI.txt") || !File.Exists("Keys/imageAPI.json") || !File.Exists("Keys/googleAPI.json"))
+            if (!File.Exists("Keys/token.txt") || !File.Exists("Keys/perspectiveAPI.txt") || !File.Exists("Keys/googleAPI.json"))
                 throw new FileNotFoundException("Missing Key file");
 
             await InitVariables(File.ReadAllText("Keys/token.txt"));
             perspectiveApi = File.ReadAllText("Keys/perspectiveAPI.txt");
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Keys/imageAPI.json");
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Keys/googleAPI.json");
             imageClient = ImageAnnotatorClient.Create();
             translationClient = TranslationClient.Create();
 
