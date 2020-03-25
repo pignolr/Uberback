@@ -146,11 +146,11 @@
     <Compile Include="API\GoogleTranslator.cs" />
     <Compile Include="API\PerspectiveTextAnalyserConfig.cs" />
     <Compile Include="Db.cs" />
-    <Compile Include="Endpoint\AnalyseBatch.cs" />
+    <Compile Include="Endpoint\Data.cs" />
     <Compile Include="Endpoint\Base.cs" />
     <Compile Include="Endpoint\Collect.cs" />
     <Compile Include="Endpoint\Common.cs" />
-    <Compile Include="Endpoint\Data.cs" />
+    <Compile Include="Endpoint\OldData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Response\Collect.cs" />
@@ -160,7 +160,7 @@
     <Compile Include="Response\Information.cs" />
     <Compile Include="Response\Error.cs" />
     <Compile Include="Response\FlagData.cs" />
-    <Compile Include="Validator\AnalyseBatch.cs" />
+    <Compile Include="Validator\Data.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
