@@ -5,7 +5,7 @@ using Google.Cloud.Vision.V1;
 
 namespace Uberback.API
 {
-    class GoogleVisionV1ImageAnalyser: IImageAnalyser
+    class GoogleVisionV1ImageAnalyser
     {
         private readonly ImageAnnotatorClient ImageClient;
         public GoogleVisionV1ImageAnalyser(string googleAPIFile)

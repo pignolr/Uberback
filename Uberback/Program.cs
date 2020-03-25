@@ -22,13 +22,11 @@ namespace Uberback
         public Db db { private set; get; }
 
         public string token { private set; get; }
-        public ImageAnnotatorClient imageClient { private set; get; }
-        public TranslationClient translationClient { private set; get; }
         public string perspectiveApi { private set; get; }
 
-        public API.ITranslator Translator { private set; get; }
-        public API.ITextAnalyser TextAnalyser { private set; get; }
-        public API.IImageAnalyser ImageAnalyser { private set; get; }
+        public API.GoogleTranslator Translator { private set; get; }
+        public API.PerspectiveTextAnalyser TextAnalyser { private set; get; }
+        public API.GoogleVisionV1ImageAnalyser ImageAnalyser { private set; get; }
 
         static async Task Main(string[] args)
             => await new Program().InitAsync();
@@ -49,8 +47,6 @@ namespace Uberback
             await InitVariables(File.ReadAllText("Keys/token.txt"));
             perspectiveApi = File.ReadAllText("Keys/perspectiveAPI.txt");
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Keys/googleAPI.json");
-            imageClient = ImageAnnotatorClient.Create();
-            translationClient = TranslationClient.Create();
 
             Translator = new API.GoogleTranslator("Keys/googleAPI.json");
             TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/GoogleVisionV1ImageAnalyserConfig.xml", Translator);

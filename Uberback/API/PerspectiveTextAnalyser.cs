@@ -9,16 +9,16 @@ using System.IO;
 
 namespace Uberback.API
 {
-    class PerspectiveTextAnalyser : ITextAnalyser
+    class PerspectiveTextAnalyser
     {
         private static string[] AllowedLanguage;
         private static Dictionary<string, List<Tuple<string, float>>> Categories;
         private readonly string PerspectiveApiToken;
         private readonly string PerspectiveApiUrl;
-        private readonly ITranslator Translator;
+        private readonly GoogleTranslator Translator;
         private PerspectiveTextAnalyserConfig Config;
 
-        public PerspectiveTextAnalyser(string perspectiveAPITokenFile, string configFileName, ITranslator translator)
+        public PerspectiveTextAnalyser(string perspectiveAPITokenFile, string configFileName, GoogleTranslator translator)
         {
             PerspectiveApiToken = File.ReadAllText(perspectiveAPITokenFile);
             PerspectiveApiUrl = "https://commentanalyzer.googleapis.com/v1alpha1";

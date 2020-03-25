@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Uberback.API
 {
-    class GoogleTranslator : ITranslator
+    class GoogleTranslator
     {
         private readonly TranslationClient TranslationClient;
 

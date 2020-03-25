@@ -139,10 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\GoogleVisionV1ImageAnalyser.cs" />
-    <Compile Include="API\IImageAnalyser.cs" />
     <Compile Include="API\PerspectiveTextAnalyser.cs" />
-    <Compile Include="API\ITextAnalyser.cs" />
-    <Compile Include="API\ITranslator.cs" />
     <Compile Include="API\GoogleTranslator.cs" />
     <Compile Include="API\PerspectiveTextAnalyserConfig.cs" />
     <Compile Include="Db.cs" />
