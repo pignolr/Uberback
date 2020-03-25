@@ -50,7 +50,6 @@ namespace Uberback
         public async Task AddTextAsync(string flags, string userId, string service)
         {
             await R.Db(dbName).Table("Text").Insert(R
-//                .HashMap("id", await R.Db(dbName).Table("Text").Count().RunAsync(conn))
                 .HashMap("UserId", userId)
                 .With("Flags", flags)
                 .With("DateTime", DateTime.Now.ToString("yyyyMMddHHmmss"))

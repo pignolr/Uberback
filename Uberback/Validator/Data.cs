@@ -74,7 +74,7 @@ namespace Uberback.Validator
         {
             Endpoint.Common.Answer? error = Endpoint.Common.BasicCheck(args.Token);
             if (error.HasValue)
-                return new ValidatorResponse { Message = error.Value.message, StatusCode = HttpStatusCode.Forbidden };
+                return new ValidatorResponse { Message = error.Value.message, StatusCode = error.Value.code };
             return null;
         }
 
@@ -83,7 +83,7 @@ namespace Uberback.Validator
             if (string.IsNullOrEmpty(args.UserId))
                 return new ValidatorResponse { Message = "The userId is not provided", StatusCode = HttpStatusCode.BadRequest };
             if (!Endpoint.Common.IsUserExists(args.UserId))
-                return new ValidatorResponse { Message = "This userId not exist", StatusCode = HttpStatusCode.Forbidden };
+                return new ValidatorResponse { Message = "This userId not exist", StatusCode = HttpStatusCode.BadRequest };
             return null;
         }
 

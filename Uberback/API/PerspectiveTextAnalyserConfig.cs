@@ -24,7 +24,7 @@ namespace Uberback.API
             {
                 XmlConfigFile.Load(ConfigFileName);
             }
-            catch
+            catch (Exception e) when (e is DirectoryNotFoundException || e is FileNotFoundException)
             {
                 CreateDefaultConfigFile();
                 return;
@@ -37,7 +37,6 @@ namespace Uberback.API
             {
                 LoadDefaultConfig();
             }
-            return;
         }
 
         private void CreateDefaultConfigFile()
