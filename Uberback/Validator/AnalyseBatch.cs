@@ -14,7 +14,7 @@ namespace Uberback.Validator
             public HttpStatusCode StatusCode { get; set; }
         }
 
-        public static ValidatorResponse ValidateRequest(Endpoint.AnalyseBatchRequest args)
+        public static ValidatorResponse ValidateRequest(Endpoint.AnalyzeBatch.AnalyseBatchRequest args)
         {
             ValidatorResponse error;
             if ((error = ValidateBatchRequest(args)) != null
@@ -25,16 +25,17 @@ namespace Uberback.Validator
                 return error;
             return null;
         }
-        public static ValidatorResponse ValidateBatchRequest(Endpoint.AnalyseBatchRequest args)
+
+        public static ValidatorResponse ValidateBatchRequest(Endpoint.AnalyzeBatch.AnalyseBatchRequest args)
         {
             if (args == null)
                 return new ValidatorResponse { Message = "Invalid format of request", StatusCode = HttpStatusCode.BadRequest };
             return null;
         }
-            public static ValidatorResponse ValidateUrlBatch(Endpoint.AnalyseBatchRequest args)
+
+        public static ValidatorResponse ValidateUrlBatch(Endpoint.AnalyzeBatch.AnalyseBatchRequest args)
         {
-            if (args.UrlBatchs == null
-                || args.UrlBatchs.Length == 0)
+            if (args.UrlBatchs == null || args.UrlBatchs.Count == 0)
                 return new ValidatorResponse { Message = "No Batch provided", StatusCode = HttpStatusCode.BadRequest };
             ValidatorResponse error;
             foreach (var urlBatch in args.UrlBatchs)
@@ -49,7 +50,7 @@ namespace Uberback.Validator
             return null;
         }
 
-        public static ValidatorResponse ValidateImages(Endpoint.AnalyseBatchRequestUrlBatch args, string urlSrc)
+        public static ValidatorResponse ValidateImages(Endpoint.AnalyzeBatch.AnalyseBatchRequestUrlBatch args, string urlSrc)
         {
             if (args.Images == null)
                 return null;
@@ -57,15 +58,11 @@ namespace Uberback.Validator
             {
                 if (item.Nb == 0 || string.IsNullOrEmpty(item.Data))
                     return new ValidatorResponse { Message = "Invalid item in the list of images of \"" + urlSrc + "\": doesn't contain \"data\" or \"nb\"", StatusCode = HttpStatusCode.BadRequest };
-                // Not a valid way to check if the url is an image
-/*                    if (!Endpoint.Common.IsAbsoluteUrl(item.data)
-                    && !Endpoint.Common.IsRelativeUrl(item.data))
-                    return new ValidatorResponse { Message = "Invalid item in the list of images: \"data\" must be an url", StatusCode = HttpStatusCode.BadRequest };*/
             }
             return null;
         }
 
-        public static ValidatorResponse ValidateTexts(Endpoint.AnalyseBatchRequestUrlBatch args, string urlSrc)
+        public static ValidatorResponse ValidateTexts(Endpoint.AnalyzeBatch.AnalyseBatchRequestUrlBatch args, string urlSrc)
         {
             if (args.Texts ==  null)
                 return null;
@@ -77,7 +74,7 @@ namespace Uberback.Validator
             return null;
         }
 
-        public static ValidatorResponse ValidateToken(Endpoint.AnalyseBatchRequest args)
+        public static ValidatorResponse ValidateToken(Endpoint.AnalyzeBatch.AnalyseBatchRequest args)
         {
             Endpoint.Common.Answer? error = Endpoint.Common.BasicCheck(args.Token);
             if (error.HasValue)
@@ -85,7 +82,7 @@ namespace Uberback.Validator
             return null;
         }
 
-        public static ValidatorResponse ValidateUserId(Endpoint.AnalyseBatchRequest args)
+        public static ValidatorResponse ValidateUserId(Endpoint.AnalyzeBatch.AnalyseBatchRequest args)
         {
             if (string.IsNullOrEmpty(args.UserId))
                 return new ValidatorResponse { Message = "The userId is not provided", StatusCode = HttpStatusCode.BadRequest };
@@ -94,7 +91,7 @@ namespace Uberback.Validator
             return null;
         }
 
-        public static ValidatorResponse ValidateService(Endpoint.AnalyseBatchRequest args)
+        public static ValidatorResponse ValidateService(Endpoint.AnalyzeBatch.AnalyseBatchRequest args)
         {
             if (string.IsNullOrEmpty(args.Service))
                 return new ValidatorResponse { Message = "The Service is not provided", StatusCode = HttpStatusCode.BadRequest };

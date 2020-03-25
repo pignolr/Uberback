@@ -98,11 +98,9 @@ namespace Uberback.Endpoint
                 return Response.AsJson(new Response.Error() { Message = error }, HttpStatusCode.InternalServerError);
             else
                 return Response.AsJson(new Response.Empty(), HttpStatusCode.NoContent);
-
         }
 
         private static string StringifyFlags(Dictionary<string, string> trigeredFlags)
             => string.Join(",", trigeredFlags.Keys);
     }
-
 }

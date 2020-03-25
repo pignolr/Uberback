@@ -150,6 +150,5 @@ namespace Uberback.API
             Categories = categories;
             AllowedLanguage = allowedLanguage.ToArray();
         }
-
     }
 }

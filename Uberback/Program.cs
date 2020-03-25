@@ -30,7 +30,6 @@ namespace Uberback
         public API.ITextAnalyser TextAnalyser { private set; get; }
         public API.IImageAnalyser ImageAnalyser { private set; get; }
 
-
         static async Task Main(string[] args)
             => await new Program().InitAsync();
 

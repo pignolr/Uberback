@@ -23,7 +23,7 @@ namespace Uberback.API
 
         public PerspectiveTextAnalyser(string perspectiveAPITokenFile, string configFileName, ITranslator translator)
         {
-            PerspectiveApiToken = File.ReadAllText(perspectiveAPITokenFile); ;
+            PerspectiveApiToken = File.ReadAllText(perspectiveAPITokenFile);
             PerspectiveApiUrl = "https://commentanalyzer.googleapis.com/v1alpha1";
 
             Translator = translator;

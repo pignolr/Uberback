@@ -24,7 +24,6 @@ namespace Uberback.Validator
             return null;
         }
 
-
         public static ValidatorResponse ValidateData(NameValueCollection args)
         {
             var data = args.Get("data");
