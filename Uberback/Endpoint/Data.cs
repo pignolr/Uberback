@@ -1,11 +1,7 @@
 ﻿using Nancy;
-using Newtonsoft.Json;
-using RethinkDb.Driver.Net;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Uberback.Endpoint

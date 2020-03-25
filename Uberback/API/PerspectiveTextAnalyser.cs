@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Http;
-using System.Web;
 using System.Threading.Tasks;
 using System.IO;
-using System.Xml;
-using System.Globalization;
 
 namespace Uberback.API
 {

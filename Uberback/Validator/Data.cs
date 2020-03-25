@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using Nancy;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using Nancy;
 
 namespace Uberback.Validator
 {
