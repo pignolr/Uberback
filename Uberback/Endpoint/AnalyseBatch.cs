@@ -59,12 +59,12 @@ namespace Uberback.Endpoint
                 foreach (var urlBatch in batch.UrlBatchs) {
                     if (urlBatch.Images != null) {
                         foreach (var image in urlBatch.Images) {
-                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseImageAsync(batch.UserId, urlBatch.UrlSrc, image.Data, batch.Service));
+                            taskErrors.Add(ConnectToAPIForAnalyseImageAsync(batch.UserId, urlBatch.UrlSrc, image.Data, batch.Service));
                         }
                     }
                     if (urlBatch.Texts != null) {
                         foreach (var text in urlBatch.Texts) {
-                            taskErrors.Add(Analyze.ConnectToAPIForAnalyseTextAsync(batch.UserId, urlBatch.UrlSrc, text.Data, batch.Service));
+                            taskErrors.Add(ConnectToAPIForAnalyseTextAsync(batch.UserId, urlBatch.UrlSrc, text.Data, batch.Service));
                         }
                     }
                 }
@@ -124,5 +124,58 @@ namespace Uberback.Endpoint
             }
             return batch;
         }
+
+        public static async Task<string> ConnectToAPIForAnalyseImageAsync(string userId, string urlSrc, string data, string service)
+        {
+            var imageUrl = Common.IsAbsoluteUrl(data) ? data : urlSrc + data;
+            try
+            {
+                var trigeredFlags = await Program.P.ImageAnalyser.AnalyseImageUrlAsync(imageUrl);
+                var flags = StringifyFlags(trigeredFlags);
+
+                Program.P.db.AddImageAsync(flags, userId, service).GetAwaiter().GetResult();
+                return null;
+            }
+            catch (Exception e)
+            {
+                return "Error in the analyze of image \"" + imageUrl + "\": " + e.Message;
+            }
+        }
+
+        public static async Task<string> ConnectToAPIForAnalyseTextAsync(string userId, string urlSrc, string text, string service)
+        {
+            try
+            {
+                string flags;
+                var textWithSalt = text + "0nes@l7yb0y¨^";
+                string hashedText = Common.GetHashString(textWithSalt);
+                // Check if the text is already analysed
+                if (await Program.P.db.IsTextAnalysedAsync(hashedText))
+                {
+                    // Get old Flag
+                    flags = await Program.P.db.GetFlagsFromAnalysedTextAsync(hashedText);
+                    await Program.P.db.UpdateLastDateTimeOfAnalysedTextAsync(hashedText);
+                }
+                else
+                {
+                    // Analyse text
+                    var trigeredFlags = await Program.P.TextAnalyser.AnalyseTextAsync(text);
+                    flags = StringifyFlags(trigeredFlags);
+
+                    // Store the result
+                    await Program.P.db.AddAnalysedTextAsync(flags, hashedText);
+                }
+                // Log the analysed text
+                await Program.P.db.AddTextAsync(flags, userId, service);
+                return null;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        private static string StringifyFlags(Dictionary<string, string> trigeredFlags)
+            => string.Join(",", trigeredFlags.Keys);
     }
 }

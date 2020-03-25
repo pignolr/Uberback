@@ -148,7 +148,6 @@
     <Compile Include="Db.cs" />
     <Compile Include="Endpoint\AnalyseBatch.cs" />
     <Compile Include="Endpoint\Base.cs" />
-    <Compile Include="Endpoint\Analyze.cs" />
     <Compile Include="Endpoint\Collect.cs" />
     <Compile Include="Endpoint\Common.cs" />
     <Compile Include="Endpoint\Data.cs" />
@@ -161,7 +160,6 @@
     <Compile Include="Response\Information.cs" />
     <Compile Include="Response\Error.cs" />
     <Compile Include="Response\FlagData.cs" />
-    <Compile Include="Validator\Analyse.cs" />
     <Compile Include="Validator\AnalyseBatch.cs" />
   </ItemGroup>
   <ItemGroup>
