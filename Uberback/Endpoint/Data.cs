@@ -1,4 +1,5 @@
-﻿using Nancy;
+﻿using Google.Cloud.Vision.V1;
+using Nancy;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -132,7 +133,7 @@ namespace Uberback.Endpoint
                 Program.P.db.AddImageAsync(flags, userId, service).GetAwaiter().GetResult();
                 return null;
             }
-            catch (Exception e)
+            catch (Exception e) when (e is System.Net.Http.HttpRequestException || e is ArgumentException || e is AnnotateImageException)
             {
                 return "Error in the analyze of image \"" + imageUrl + "\": " + e.Message;
             }
@@ -165,7 +166,7 @@ namespace Uberback.Endpoint
                 await Program.P.db.AddTextAsync(flags, userId, service);
                 return null;
             }
-            catch (Exception e)
+            catch (Exception e) when (e is System.Net.Http.HttpRequestException)
             {
                 return e.Message;
             }
