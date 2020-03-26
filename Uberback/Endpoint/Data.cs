@@ -144,7 +144,7 @@ namespace Uberback.Endpoint
             try
             {
                 string flags;
-                var textWithSalt = text + "0nes@l7yb0y¨^";
+                var textWithSalt = text + Program.P.saltForHash;
                 string hashedText = Common.GetHashString(textWithSalt);
                 // Check if the text is already analysed
                 if (await Program.P.db.IsTextAnalysedAsync(hashedText))

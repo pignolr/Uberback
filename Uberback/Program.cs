@@ -13,16 +13,16 @@ namespace Uberback
         private Program() // Default ctor, used by Main
         { }
 
-        public Program(string backToken) // Used by unit tests
+        public Program(string backToken, string backSaltForHash) // Used by unit tests
         {
-            InitVariables(backToken).GetAwaiter().GetResult();
+            InitVariables(backToken, backSaltForHash).GetAwaiter().GetResult();
         }
 
         public static Program P;
         public Db db { private set; get; }
 
         public string token { private set; get; }
-        public string perspectiveApi { private set; get; }
+        public string saltForHash { private set; get; }
 
         public API.GoogleTranslator Translator { private set; get; }
         public API.PerspectiveTextAnalyser TextAnalyser { private set; get; }
@@ -31,11 +31,12 @@ namespace Uberback
         static async Task Main(string[] args)
             => await new Program().InitAsync();
 
-        private async Task InitVariables(string backToken)
+        private async Task InitVariables(string backToken, string backSaltForHash)
         {
             P = this;
             db = new Db();
             token = backToken;
+            saltForHash = backSaltForHash;
             await db.InitAsync();
         }
 
@@ -43,10 +44,10 @@ namespace Uberback
         {
             if (!File.Exists("Keys/token.txt") || !File.Exists("Keys/perspectiveAPI.txt") || !File.Exists("Keys/googleAPI.json"))
                 throw new FileNotFoundException("Missing Key file");
+            if (!File.Exists("Config/saltForHash.txt"))
+                throw new FileNotFoundException("Missing Config file");
 
-            await InitVariables(File.ReadAllText("Keys/token.txt"));
-            perspectiveApi = File.ReadAllText("Keys/perspectiveAPI.txt");
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "Keys/googleAPI.json");
+            await InitVariables(File.ReadAllText("Keys/token.txt"), File.ReadAllText("Config/saltForHash.txt"));
 
             Translator = new API.GoogleTranslator("Keys/googleAPI.json");
             TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/GoogleVisionV1ImageAnalyserConfig.xml", Translator);
