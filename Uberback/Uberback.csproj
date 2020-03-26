@@ -156,6 +156,7 @@
     <Compile Include="Response\Information.cs" />
     <Compile Include="Response\Error.cs" />
     <Compile Include="Response\FlagData.cs" />
+    <Compile Include="Validator\Collect.cs" />
     <Compile Include="Validator\Data.cs" />
   </ItemGroup>
   <ItemGroup>
