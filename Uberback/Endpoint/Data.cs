@@ -15,7 +15,7 @@ namespace Uberback.Endpoint
             public int Nb { get; set; }
         }
 
-        public class AnalyseBatchRequestUrlBatch
+        public class AnalyseBatchRequestDataBatch
         {
             public string UrlSrc { get; set; }
             public List<AnalyseBatchRequestData> Images { get; set; }
@@ -27,7 +27,7 @@ namespace Uberback.Endpoint
             public string Token { get; set; }
             public string UserId { get; set; }
             public string Service { get; set; }
-            public List<AnalyseBatchRequestUrlBatch> UrlBatchs { get; set; }
+            public List<AnalyseBatchRequestDataBatch> DataBatches { get; set; }
         }
 
         public Data() : base("/data")
@@ -53,7 +53,7 @@ namespace Uberback.Endpoint
 
                 // Do request
                 var taskErrors = new List<Task<string>>();
-                foreach (var urlBatch in batch.UrlBatchs) {
+                foreach (var urlBatch in batch.DataBatches) {
                     if (urlBatch.Images != null) {
                         foreach (var image in urlBatch.Images) {
                             taskErrors.Add(ConnectToAPIForAnalyseImageAsync(batch.UserId, urlBatch.UrlSrc, image.Content, batch.Service));
@@ -83,41 +83,41 @@ namespace Uberback.Endpoint
         {
             var batch = new AnalyseBatchRequest
             {
-                UrlBatchs = new List<AnalyseBatchRequestUrlBatch>()
+                DataBatches = new List<AnalyseBatchRequestDataBatch>()
             };
 
             batch.Token = args.Get("token");
             batch.UserId = args.Get("userId");
             batch.Service = args.Get("service");
 
-            int idxUrlBatch = 0;
+            int idxDataBatches = 0;
             string urlSrc;
-            while (!string.IsNullOrEmpty((urlSrc = args.Get("urlBatchs[" + idxUrlBatch + "][urlSrc]"))))
+            while (!string.IsNullOrEmpty((urlSrc = args.Get("dataBatches[" + idxDataBatches + "][urlSrc]"))))
             {
-                batch.UrlBatchs.Add(new AnalyseBatchRequestUrlBatch { UrlSrc = urlSrc, Images = new List<AnalyseBatchRequestData>(), Texts = new List<AnalyseBatchRequestData>() });
+                batch.DataBatches.Add(new AnalyseBatchRequestDataBatch { UrlSrc = urlSrc, Images = new List<AnalyseBatchRequestData>(), Texts = new List<AnalyseBatchRequestData>() });
 
                 int idxData = 0;
-                while (!string.IsNullOrEmpty(args.Get("urlBatchs[" + idxUrlBatch + "][texts][" + idxData + "][nb]")))
+                while (!string.IsNullOrEmpty(args.Get("dataBatches[" + idxDataBatches + "][texts][" + idxData + "][nb]")))
                 {
-                    batch.UrlBatchs[idxUrlBatch].Texts.Add(new AnalyseBatchRequestData
+                    batch.DataBatches[idxDataBatches].Texts.Add(new AnalyseBatchRequestData
                     {
-                        Content = args.Get("urlBatchs[" + idxUrlBatch + "][texts][" + idxData + "][content]"),
-                        Nb = Int16.Parse(args.Get("urlBatchs[" + idxUrlBatch + "][texts][" + idxData + "][nb]"))
+                        Content = args.Get("dataBatches[" + idxDataBatches + "][texts][" + idxData + "][content]"),
+                        Nb = Int16.Parse(args.Get("dataBatches[" + idxDataBatches + "][texts][" + idxData + "][nb]"))
                     });
                     ++idxData;
                 }
 
                 idxData = 0;
-                while (!string.IsNullOrEmpty(args.Get("urlBatchs[" + idxUrlBatch + "][images][" + idxData + "][nb]")))
+                while (!string.IsNullOrEmpty(args.Get("dataBatches[" + idxDataBatches + "][images][" + idxData + "][nb]")))
                 {
-                    batch.UrlBatchs[idxUrlBatch].Images.Add(new AnalyseBatchRequestData
+                    batch.DataBatches[idxDataBatches].Images.Add(new AnalyseBatchRequestData
                     {
-                        Content = args.Get("urlBatchs[" + idxUrlBatch + "][images][" + idxData + "][content]"),
-                        Nb = Int16.Parse(args.Get("urlBatchs[" + idxUrlBatch + "][images][" + idxData + "][nb]"))
+                        Content = args.Get("dataBatches[" + idxDataBatches + "][images][" + idxData + "][content]"),
+                        Nb = Int16.Parse(args.Get("dataBatches[" + idxDataBatches + "][images][" + idxData + "][nb]"))
                     });
                     ++idxData;
                 }
-                ++idxUrlBatch;
+                ++idxDataBatches;
             }
             return batch;
         }

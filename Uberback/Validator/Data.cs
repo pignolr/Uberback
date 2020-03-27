@@ -31,22 +31,22 @@ namespace Uberback.Validator
 
         public static ValidatorResponse ValidateUrlBatch(Endpoint.Data.AnalyseBatchRequest args)
         {
-            if (args.UrlBatchs == null || args.UrlBatchs.Count == 0)
+            if (args.DataBatches == null || args.DataBatches.Count == 0)
                 return new ValidatorResponse { Message = "No Batch provided", StatusCode = HttpStatusCode.BadRequest };
             ValidatorResponse error;
-            foreach (var urlBatch in args.UrlBatchs)
+            foreach (var dataBatch in args.DataBatches)
             {
-                if (!Endpoint.Common.IsAbsoluteUrl(urlBatch.UrlSrc)
-                    && !Endpoint.Common.IsRelativeUrl(urlBatch.UrlSrc))
+                if (!Endpoint.Common.IsAbsoluteUrl(dataBatch.UrlSrc)
+                    && !Endpoint.Common.IsRelativeUrl(dataBatch.UrlSrc))
                     return new ValidatorResponse { Message = "Invalid item in the list of batch of url: \"urlSrc\" must be an url", StatusCode = HttpStatusCode.BadRequest };
-                if ((error = ValidateImages(urlBatch, urlBatch.UrlSrc)) != null
-                    || (error = ValidateTexts(urlBatch, urlBatch.UrlSrc)) != null)
+                if ((error = ValidateImages(dataBatch, dataBatch.UrlSrc)) != null
+                    || (error = ValidateTexts(dataBatch, dataBatch.UrlSrc)) != null)
                     return error;
             }
             return null;
         }
 
-        public static ValidatorResponse ValidateImages(Endpoint.Data.AnalyseBatchRequestUrlBatch args, string urlSrc)
+        public static ValidatorResponse ValidateImages(Endpoint.Data.AnalyseBatchRequestDataBatch args, string urlSrc)
         {
             if (args.Images == null)
                 return null;
@@ -58,11 +58,11 @@ namespace Uberback.Validator
             return null;
         }
 
-        public static ValidatorResponse ValidateTexts(Endpoint.Data.AnalyseBatchRequestUrlBatch args, string urlSrc)
+        public static ValidatorResponse ValidateTexts(Endpoint.Data.AnalyseBatchRequestDataBatch databatch, string urlSrc)
         {
-            if (args.Texts ==  null)
+            if (databatch.Texts ==  null)
                 return null;
-            foreach (var item in args.Texts)
+            foreach (var item in databatch.Texts)
             {
                 if (item.Nb == 0 || string.IsNullOrEmpty(item.Content))
                     return new ValidatorResponse { Message = "Invalid item in the list of texts of \"" + urlSrc + "\": doesn't contain \"data\" or \"nb\"", StatusCode = HttpStatusCode.BadRequest };
