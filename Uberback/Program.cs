@@ -50,7 +50,7 @@ namespace Uberback
             await InitVariables(File.ReadAllText("Keys/token.txt"), File.ReadAllText("Config/saltForHash.txt"));
 
             Translator = new API.GoogleTranslator("Keys/googleAPI.json");
-            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/GoogleVisionV1ImageAnalyserConfig.xml", Translator);
+            TextAnalyser = new API.PerspectiveTextAnalyser("Keys/perspectiveAPI.txt", "Config/PerspectiveTextAnalyser.xml", Translator);
             ImageAnalyser = new API.GoogleVisionV1ImageAnalyser("Keys/googleAPI.json");
 
             AutoResetEvent autoEvent = new AutoResetEvent(false);
