@@ -123,11 +123,13 @@
     <Compile Include="Endpoint\Collect.cs" />
     <Compile Include="Endpoint\Common.cs" />
     <Compile Include="Endpoint\Data.cs" />
+    <Compile Include="Endpoint\FlagsList.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Response\Collect.cs" />
     <Compile Include="Response\Data.cs" />
     <Compile Include="Response\Empty.cs" />
+    <Compile Include="Response\FlagsList.cs" />
     <Compile Include="Response\Information.cs" />
     <Compile Include="Response\Error.cs" />
     <Compile Include="Response\FlagData.cs" />
