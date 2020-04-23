@@ -127,9 +127,25 @@ namespace Uberback.Endpoint
             var imageUrl = Common.IsAbsoluteUrl(data) ? data : urlSrc + data;
             try
             {
-                var trigeredFlags = await Program.P.ImageAnalyser.AnalyseImageUrlAsync(imageUrl);
-                var flags = StringifyFlags(trigeredFlags);
+                string flags;
+                var urlWithSalt = imageUrl + Program.P.saltForHash;
+                string hashedUrl = Common.GetHashString(urlWithSalt);
+                // Check if the image is already analysed
+                if (await Program.P.db.IsImageAnalysedAsync(hashedUrl))
+                {
+                    // Get old Flag
+                    flags = await Program.P.db.GetFlagsFromAnalysedImageAsync(hashedUrl);
+                    await Program.P.db.UpdateLastDateTimeOfAnalysedImageAsync(hashedUrl);
+                } else
+                {
+                    // Analyse image
+                    var trigeredFlags = await Program.P.ImageAnalyser.AnalyseImageUrlAsync(imageUrl);
+                    flags = StringifyFlags(trigeredFlags);
 
+                    // Store the result
+                    await Program.P.db.AddAnalysedImageAsync(flags, hashedUrl);
+                }
+                // Log the analysed image
                 Program.P.db.AddImageAsync(flags, userId, service).GetAwaiter().GetResult();
                 return null;
             }

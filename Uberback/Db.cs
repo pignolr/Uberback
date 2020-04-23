@@ -40,6 +40,8 @@ namespace Uberback
                 R.Db(dbName).TableCreate("Image").Run(conn);
             if (!await R.Db(dbName).TableList().Contains("AnalysedText").RunAsync<bool>(conn))
                 R.Db(dbName).TableCreate("AnalysedText").Run(conn);
+            if (!await R.Db(dbName).TableList().Contains("AnalysedImage").RunAsync<bool>(conn))
+                R.Db(dbName).TableCreate("AnalysedImage").Run(conn);
         }
 
         /// <summary>
@@ -81,8 +83,26 @@ namespace Uberback
         public async Task AddAnalysedTextAsync(string flags, string hashedText)
         {
             await R.Db(dbName).Table("AnalysedText")
-                .Insert(new {
+                .Insert(new
+                {
                     HashedText = hashedText,
+                    Flags = flags,
+                    FirstDateTime = DateTime.Now.ToString("yyyyMMddHHmmss"),
+                    LastDateTime = DateTime.Now.ToString("yyyyMMddHHmmss")
+                }).RunAsync(conn);
+        }
+
+        /// <summary>
+        /// Add analysed image in the db
+        /// </summary>
+        /// <param name="flags">Flag triggered by the image, SAFE if none</param>
+        /// <param name="userId">User id</param>
+        public async Task AddAnalysedImageAsync(string flags, string hashedUrl)
+        {
+            await R.Db(dbName).Table("AnalysedImage")
+                .Insert(new
+                {
+                    HashedUrl = hashedUrl,
                     Flags = flags,
                     FirstDateTime = DateTime.Now.ToString("yyyyMMddHHmmss"),
                     LastDateTime = DateTime.Now.ToString("yyyyMMddHHmmss")
@@ -106,19 +126,19 @@ namespace Uberback
         }
 
         /// <summary>
-        /// Get image table
+        /// Get flags of a text from table AnalysedText
         /// </summary>
         public async Task<string> GetFlagsFromAnalysedTextAsync(string hashedText)
         {
             return await R.Db(dbName).Table("AnalysedText")
-                .Filter(new{ HashedText = hashedText })
+                .Filter(new { HashedText = hashedText })
                 .GetField("Flags")
                 .Nth(0)
                 .RunAsync(conn);
         }
 
         /// <summary>
-        /// Get image table
+        /// Update Date Time of an analyzed text
         /// </summary>
         public async Task UpdateLastDateTimeOfAnalysedTextAsync(string hashedText)
         {
@@ -130,7 +150,7 @@ namespace Uberback
         }
 
         /// <summary>
-        /// Get image table
+        /// Check if a text is already analysed
         /// </summary>
         public async Task<bool> IsTextAnalysedAsync(string hashedText)
         {
@@ -140,7 +160,42 @@ namespace Uberback
                 .RunAsync(conn);
         }
 
-    private readonly RethinkDB R;
+        /// <summary>
+        /// Get flags of an image from table AnalysedImage
+        /// </summary>
+        public async Task<string> GetFlagsFromAnalysedImageAsync(string hashedUrl)
+        {
+            return await R.Db(dbName).Table("AnalysedImage")
+                .Filter(new { HashedUrl = hashedUrl })
+                .GetField("Flags")
+                .Nth(0)
+                .RunAsync(conn);
+        }
+
+        /// <summary>
+        /// Update Date Time of an analyzed image
+        /// </summary>
+        public async Task UpdateLastDateTimeOfAnalysedImageAsync(string hashedUrl)
+        {
+            await R.Db(dbName).Table("AnalysedImage")
+                .Filter(new { HashedUrl = hashedUrl })
+                .Nth(0)
+                .Update(new { LastDateTime = DateTime.Now.ToString("yyyyMMddHHmmss") })
+                .RunAsync(conn);
+        }
+
+        /// <summary>
+        /// Check if an image is already analysed
+        /// </summary>
+        public async Task<bool> IsImageAnalysedAsync(string hashedUrl)
+        {
+            return await R.Db(dbName).Table("AnalysedImage")
+                .Filter(new { HashedUrl = hashedUrl })
+                .Count().Gt(0)
+                .RunAsync(conn);
+        }
+
+        private readonly RethinkDB R;
         private Connection conn;
         private string dbName;
     }
