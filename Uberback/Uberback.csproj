@@ -147,7 +147,6 @@
     <Compile Include="Endpoint\Base.cs" />
     <Compile Include="Endpoint\Collect.cs" />
     <Compile Include="Endpoint\Common.cs" />
-    <Compile Include="Endpoint\Data.cs" />
     <Compile Include="Endpoint\FlagsList.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
